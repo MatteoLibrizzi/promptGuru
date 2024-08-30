@@ -1,4 +1,4 @@
-export default function Example() {
+export default function Use() {
   return (
     <>
       {/* Background color split screen for large screens */}
@@ -15,6 +15,7 @@ export default function Example() {
                 <div className="relative h-full" style={{ minHeight: "12rem" }}>
                   <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" />
                 </div>
+
                 {/* End left column area */}
               </div>
             </div>

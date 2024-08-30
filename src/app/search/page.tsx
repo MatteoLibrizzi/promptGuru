@@ -1,4 +1,4 @@
-export default function Example() {
+export default function Search() {
   return (
     <>
       {/* Background color split screen for large screens */}
@@ -13,8 +13,12 @@ export default function Example() {
               <div className="h-full py-6 pl-4 pr-6 sm:pl-6 lg:pl-8 xl:pl-0">
                 {/* Start left column area */}
                 <div className="relative h-full" style={{ minHeight: "12rem" }}>
-                  <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" />
+                  <div className="border-purple-500">
+                    <textarea placeholder="edit" />
+                  </div>
+                  {/* <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" /> */}
                 </div>
+
                 {/* End left column area */}
               </div>
             </div>
