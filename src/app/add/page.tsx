@@ -1,3 +1,4 @@
+import PromptForm from "../components/promptForm";
 export default function Add() {
   return (
     <>
@@ -24,7 +25,7 @@ export default function Add() {
               <div className="h-full py-6 px-4 sm:px-6 lg:px-8">
                 {/* Start main area*/}
                 <div className="relative h-full" style={{ minHeight: "36rem" }}>
-                  <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" />
+                  <PromptForm />
                 </div>
                 {/* End main area */}
               </div>

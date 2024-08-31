@@ -1,4 +1,7 @@
-export default function Search() {
+import UseForm from "@/app/components/useForm";
+
+export default function Use({ params }: any) {
+  console.log(params);
   return (
     <>
       {/* Background color split screen for large screens */}
@@ -13,10 +16,7 @@ export default function Search() {
               <div className="h-full py-6 pl-4 pr-6 sm:pl-6 lg:pl-8 xl:pl-0">
                 {/* Start left column area */}
                 <div className="relative h-full" style={{ minHeight: "12rem" }}>
-                  <div className="border-purple-500">
-                    <textarea placeholder="edit" />
-                  </div>
-                  {/* <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" /> */}
+                  <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" />
                 </div>
 
                 {/* End left column area */}
@@ -27,7 +27,7 @@ export default function Search() {
               <div className="h-full py-6 px-4 sm:px-6 lg:px-8">
                 {/* Start main area*/}
                 <div className="relative h-full" style={{ minHeight: "36rem" }}>
-                  <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" />
+                  <UseForm id={params.id} />
                 </div>
                 {/* End main area */}
               </div>

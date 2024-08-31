@@ -1,21 +1,6 @@
 "use client";
-"use client";
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
-import { Fragment } from "react";
-import { Button, Disclosure, Menu, Transition } from "@headlessui/react";
+import { Fragment, useState } from "react";
+import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Bars3CenterLeftIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -23,7 +8,8 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Example() {
+export default function Header() {
+  const [search, setSearch] = useState("");
   return (
     <Disclosure as="nav" className="flex-shrink-0 bg-indigo-600">
       {({ open }) => (
@@ -42,6 +28,7 @@ export default function Example() {
               </div>
 
               {/* Search section */}
+              {/* TODO MOve this part to a separate client component and make the rest ssr  */}
               <div className="flex flex-1 justify-center lg:justify-end">
                 <div className="w-full px-2 lg:px-6">
                   <label htmlFor="search" className="sr-only">
@@ -60,11 +47,13 @@ export default function Example() {
                       className="block w-full rounded-md border border-transparent bg-indigo-400 bg-opacity-25 py-2 pl-10 pr-3 leading-5 text-indigo-100 placeholder-indigo-200 focus:bg-white focus:text-gray-900 focus:placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
                       placeholder="Search Prompts"
                       type="search"
+                      onChange={(e) => setSearch(e.target.value)}
+                      value={search}
                     />
                   </div>
                 </div>
 
-                <a href="/search">Go</a>
+                <a href={`/search/${search}`}>Go</a>
               </div>
               <div className="flex lg:hidden">
                 {/* Mobile menu button */}

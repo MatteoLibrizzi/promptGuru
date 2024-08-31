@@ -1,4 +1,18 @@
-export default function Use() {
+"use client";
+
+import PromptBox from "@/app/components/promptDisplay";
+import { useQuery } from "react-query";
+
+export default function Search({ params }: { params: { keyword: string } }) {
+  console.log(params.keyword);
+
+  const { data, isLoading, isError } = useQuery({
+    queryFn: async () => {
+      const res = await fetch(`/api/search/${params.keyword}`);
+      return await res.json();
+    },
+  });
+
   return (
     <>
       {/* Background color split screen for large screens */}
@@ -13,7 +27,10 @@ export default function Use() {
               <div className="h-full py-6 pl-4 pr-6 sm:pl-6 lg:pl-8 xl:pl-0">
                 {/* Start left column area */}
                 <div className="relative h-full" style={{ minHeight: "12rem" }}>
-                  <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" />
+                  <div className="border-purple-500">
+                    <textarea placeholder="edit" />
+                  </div>
+                  {/* <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" /> */}
                 </div>
 
                 {/* End left column area */}
@@ -24,7 +41,24 @@ export default function Use() {
               <div className="h-full py-6 px-4 sm:px-6 lg:px-8">
                 {/* Start main area*/}
                 <div className="relative h-full" style={{ minHeight: "36rem" }}>
-                  <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" />
+                  <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8">
+                    {data?.prompts &&
+                      !isLoading &&
+                      !isError &&
+                      data.prompts.map((prompt: any) => {
+                        console.log(prompt);
+                        return (
+                          <PromptBox
+                            img={"https://iili.io/dwpImsj.md.png"}
+                            id={prompt.id}
+                            title={prompt.title}
+                            key={prompt.title}
+                            description={"A prompt coming from a user"} // TODO fix this
+                          />
+                        );
+                      })}
+                  </div>
+                  {isLoading && <h1>Loading...</h1>}
                 </div>
                 {/* End main area */}
               </div>
