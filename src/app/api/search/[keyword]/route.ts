@@ -1,6 +1,9 @@
-import { PROMPTS } from "../../mockStorage"
+import { PROMPTS_REPOSITORY } from "../../constants"
+
 
 export async function GET(request: Request, { params }: { params: { keyword: string } }) {
-    // TODO implement search
-    return Response.json({ prompts: PROMPTS })
+
+
+
+    return Response.json({ prompts: PROMPTS_REPOSITORY.findPromptsByKeyword(params.keyword) })
 }

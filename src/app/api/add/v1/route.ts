@@ -1,18 +1,15 @@
-import { GET_UNIQUE_ID, PROMPTS } from "../../mockStorage"
+import { PROMPTS_REPOSITORY } from "../../constants"
+
 
 export async function POST(request: Request) {
-
-
     const inputFields = await request.json()
 
-    PROMPTS.push({
+    PROMPTS_REPOSITORY.addPrompt({
         title: inputFields.title,
-        id: GET_UNIQUE_ID(),
         promptTexts: inputFields.promptTexts,
         userTextFields: inputFields.promptUserTextFields,
-        description: inputFields.description
+        description: inputFields.description, img: ""
     })
 
-    console.log(PROMPTS)
     return Response.json({})
 }

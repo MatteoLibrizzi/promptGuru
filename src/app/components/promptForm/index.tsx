@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 
-
 const FormLine = ({ label, input, parentClassname }: any) => {
   return (
     <div
@@ -41,8 +40,8 @@ export default function PromptForm() {
     promptTexts.push(lastPrompt);
 
     const promptUserTextFields = promptFields.map((userFields) => ({
-      fieldName: userFields.name,
-      fieldDescription: userFields.description,
+      name: userFields.name,
+      description: userFields.description,
     }));
 
     // TODO add img
@@ -52,10 +51,11 @@ export default function PromptForm() {
         description,
         promptTexts,
         promptUserTextFields,
+        img: "",
       }),
       method: "POST",
     });
-    console.log(await res.json());
+
   };
 
   const removeUserField = (index: number) => {

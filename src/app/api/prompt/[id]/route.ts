@@ -1,10 +1,11 @@
-import { PROMPTS } from "../../mockStorage"
+import { PROMPTS_REPOSITORY } from "../../constants"
+
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
-    console.log(request)
-    console.log(params)
 
     //TODO add data validation
-    const requestedPrompt = PROMPTS.find(prompt => prompt.id === params.id)
+    const requestedPrompt = PROMPTS_REPOSITORY.getPromptById(Number(params.id))
+
+
     return Response.json({ ...requestedPrompt })
 }
