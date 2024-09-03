@@ -4,8 +4,6 @@ import PromptBox from "@/app/components/promptDisplay";
 import { useQuery } from "react-query";
 
 export default function Search({ params }: { params: { keyword: string } }) {
-  console.log(params.keyword);
-
   const { data, isLoading, isError } = useQuery({
     queryFn: async () => {
       const res = await fetch(`/api/search/${params.keyword}`);
@@ -46,7 +44,6 @@ export default function Search({ params }: { params: { keyword: string } }) {
                       !isLoading &&
                       !isError &&
                       data.prompts.map((prompt: any) => {
-                        console.log(prompt);
                         return (
                           <PromptBox
                             img={"https://iili.io/dwpImsj.md.png"}

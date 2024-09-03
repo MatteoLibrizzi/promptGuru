@@ -3,57 +3,69 @@ import { useQuery } from "react-query";
 import FormLine from "../formLine";
 import { useEffect, useMemo, useState } from "react";
 
-export default function PromptForm({ id }: any) {
-  const { data, isLoading, isError } = useQuery({
+// TODO this should be refactored to include the parent component (it's ugly to pass the state aroudn like this)
+export default function PromptForm({ id, setGeneratedString }: any) {
+  const {
+    data: promptData,
+    isLoading: promptIsLoading,
+    isError: promptIsError,
+  } = useQuery({
     queryFn: async () => {
       const res = await fetch(`/api/prompt/${id}`);
       return await res.json();
     },
   });
-
   {
     /* TODO return 404 if nor found*/
   }
 
+  const [submited, setSubmited] = useState(false);
   const [userContent, setUserContent] = useState<string[]>([]);
+  const {
+    isLoading: generatedResponseIsLoading,
+    isError: generatedResponseIsError,
+  } = useQuery({
+    queryFn: async () => {
+      const res = await fetch(`/api/use/${id}`, {
+        method: "POST",
+        body: JSON.stringify(userContent),
+      });
+      setSubmited(false);
+      return await res.json();
+    },
+    enabled: submited,
+    queryKey: userContent,
+    onSuccess: (data) => {
+      setGeneratedString(data.generated);
+    },
+  });
+
   useEffect(() => {
-    if (!data?.userTextFields) {
+    if (!promptData?.userTextFields) {
       return;
     }
-    setUserContent(data?.userTextFields.map((i: any) => ""));
-  }, [data]);
+    setUserContent(promptData?.userTextFields.map((i: any) => ""));
+  }, [promptData]);
 
-  const submit = async () => {
-    const res = await fetch(`/api/use/${id}`, {
-      method: "POST",
-      body: JSON.stringify(userContent),
-    });
-
-    return await res.json();
-  };
-
-  console.log(userContent);
-  console.log(JSON.stringify(data));
   return (
     <div>
-      {isLoading && <h1>Loading...</h1>}
-      {!isLoading && (
+      {promptIsLoading && <h1>Loading...</h1>}
+      {!promptIsLoading && (
         <div className="space-y-8 divide-y divide-gray-200">
           <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
             <div className="space-y-6 sm:space-y-5">
               <div>
                 <h3 className="text-lg font-medium leading-6 text-gray-900">
-                  {data.title}
+                  {promptData.title}
                 </h3>
                 <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                  {data.description}
+                  {promptData.description}
                 </p>
               </div>
 
               <div className="space-y-6 sm:space-y-5">
-                {data?.userTextFields &&
-                  data.userTextFields.map((field: any, i: number) => {
-                    console.log(i);
+                {promptData?.userTextFields &&
+                  promptData.userTextFields.map((field: any, i: number) => {
                     return (
                       <>
                         <FormLine
@@ -87,7 +99,9 @@ export default function PromptForm({ id }: any) {
           <div className="pt-5">
             <div className="flex justify-end">
               <button
-                onClick={submit}
+                onClick={() => {
+                  setSubmited(true);
+                }}
                 className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
                 Submit

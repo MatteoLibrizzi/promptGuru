@@ -1,7 +1,6 @@
-import UseForm from "@/app/components/useForm";
+import { MainSection } from "./MainSection";
 
 export default function Use({ params }: any) {
-  console.log(params);
   return (
     <>
       {/* Background color split screen for large screens */}
@@ -11,12 +10,14 @@ export default function Use({ params }: any) {
         {/* 3 column wrapper */}
         <div className="mx-auto w-full max-w-7xl flex-grow lg:flex xl:px-8">
           {/* Left sidebar & main wrapper */}
+
           <div className="min-w-0 flex-1 bg-white xl:flex">
             <div className="border-b border-gray-200 bg-white xl:w-64 xl:flex-shrink-0 xl:border-b-0 xl:border-r xl:border-gray-200">
               <div className="h-full py-6 pl-4 pr-6 sm:pl-6 lg:pl-8 xl:pl-0">
                 {/* Start left column area */}
                 <div className="relative h-full" style={{ minHeight: "12rem" }}>
                   <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" />
+                  {/* TODO add previous submissions to the left side */}
                 </div>
 
                 {/* End left column area */}
@@ -27,7 +28,7 @@ export default function Use({ params }: any) {
               <div className="h-full py-6 px-4 sm:px-6 lg:px-8">
                 {/* Start main area*/}
                 <div className="relative h-full" style={{ minHeight: "36rem" }}>
-                  <UseForm id={params.id} />
+                  <MainSection id={params.id} />
                 </div>
                 {/* End main area */}
               </div>
@@ -38,6 +39,7 @@ export default function Use({ params }: any) {
             <div className="h-full py-6 pl-6 lg:w-80">
               {/* Start right column area */}
               <div className="relative h-full" style={{ minHeight: "16rem" }}>
+                {/* TODO add similarr prompts to the right side */}
                 <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" />
               </div>
               {/* End right column area */}
