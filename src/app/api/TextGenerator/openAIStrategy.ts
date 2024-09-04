@@ -12,13 +12,20 @@ export class OpenAIStrategy implements TextGenerationStrategy {
         const response = await this.openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
-                { "role": "user", "content": "write a haiku about ai" }
+                { "role": "user", "content": input }
             ]
         });
 
         // TODO test this
 
-        console.log(response.choices[0]);
-        return ""
+        console.log(JSON.stringify(response));
+        const openAiGeneratedContent = response.choices[0]?.message?.content
+        if (!openAiGeneratedContent) {
+            throw new Error("No valid response from OpenAI")
+        }
+        const escapedReturnValue = openAiGeneratedContent.replace(/\n/g, "\n");
+
+        console.log(escapedReturnValue)
+        return escapedReturnValue
     }
 }

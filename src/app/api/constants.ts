@@ -10,3 +10,4 @@ export const DDB_CLIENT = new DynamoDBClient({
     region: 'eu-west-1'
 });
 export const DDB_PROMPTS_TABLE_NAME = 'devPromptGuru-Prompts037647B5-18DRWKVU3EZ74'
+export const OPENAI_API_KEY = process.env.OPENAI_API_KEY

@@ -1,4 +1,4 @@
-import { MainSection } from "./MainSection";
+import UsePromptMainSection from "@/app/use/[id]/UsePromptMainSection";
 
 export default function Use({ params }: any) {
   return (
@@ -28,7 +28,7 @@ export default function Use({ params }: any) {
               <div className="h-full py-6 px-4 sm:px-6 lg:px-8">
                 {/* Start main area*/}
                 <div className="relative h-full" style={{ minHeight: "36rem" }}>
-                  <MainSection id={params.id} />
+                  <UsePromptMainSection id={params.id} />
                 </div>
                 {/* End main area */}
               </div>
