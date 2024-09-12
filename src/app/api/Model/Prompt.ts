@@ -1,3 +1,5 @@
+import { PromptId } from "../Repositories/prompts";
+
 export type UserTextField = { name: string, description: string }
 
 export class PromptModel {
@@ -6,15 +8,17 @@ export class PromptModel {
     public userTextFields: UserTextField[];
     public img: string;
     public promptTexts: string[];
-    public id: number
+    public categories: string[]
+    public id: PromptId
 
-    constructor(title: string, description: string, userTextFields: UserTextField[], img: string, promptTexts: string[], id: number) {
+    constructor(title: string, description: string, userTextFields: UserTextField[], img: string, promptTexts: string[], categories: string[], id: PromptId) {
         this.title = title;
         this.description = description;
         this.userTextFields = userTextFields;
         this.img = img;
         this.promptTexts = promptTexts;
         this.id = id
+        this.categories = categories
     }
 
     getFilledPrompt = (userText: string[]) => {

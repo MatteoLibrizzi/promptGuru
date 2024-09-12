@@ -59,7 +59,6 @@ export class DDBUsersRepository extends UsersRepository {
 
         try {
             const putItemResponse = await DDB_CLIENT.send(putItemCommand);
-            console.log("User created successfully:", putItemResponse.$metadata.httpStatusCode);
         } catch (err) {
             console.error("Error creating user in DynamoDB:", err);
         }

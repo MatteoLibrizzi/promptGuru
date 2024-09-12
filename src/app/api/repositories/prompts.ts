@@ -1,14 +1,17 @@
-import { GetItemCommand, PutItemCommand, QueryCommand, ScanCommand } from "@aws-sdk/client-dynamodb"
+import { GetItemCommand, PutItemCommand, QueryCommand, ScanCommand, UpdateItemCommand } from "@aws-sdk/client-dynamodb"
 import { PromptModel } from "../Model/Prompt"
 import { DDB_CLIENT, DDB_PROMPTS_TABLE_NAME } from "../constants"
+import { v4 as uuidv4 } from 'uuid';
 
-export type PromptId = number
+export type PromptId = string
 
 export abstract class PromptsRepository {
     abstract getPromptById: (id: PromptId) => Promise<PromptModel | undefined>
     abstract addPrompt: (prompt: PromptModel) => Promise<void>
+    abstract addCategoryToPrompt: (id: PromptId, category: string) => Promise<void>
     abstract getRecentPrompts: (limit: number) => Promise<PromptModel[]>
-    abstract getNextId: () => Promise<number>
+    abstract getNewId: () => Promise<PromptId>
+    abstract getPromptCategories: (id: PromptId) => Promise<string[]>
 }
 
 const PROMPT = new PromptModel(
@@ -22,25 +25,35 @@ const PROMPT = new PromptModel(
         "You are an expect in Job Hunting and carreer development. You have to help a candidate modify his curriculum for a specific position. Given the following Curriculum, modify it to fit the job description that will be provided after. Here is the curriculum in markdown format:\n",
         "\nAnd here is the job description:\n",
         "\nProvide the modified curriculum in markdown format"
-    ], 0
+    ], [], uuidv4()
 )
 
 export class LocalPromptsRepository extends PromptsRepository {
-    getNextId: () => Promise<number> = async () => {
-        return this.id++
+    getPromptCategories: (id: PromptId) => Promise<string[]> = async (id) => {
+        return this.prompts.find(p => p.id === id)?.categories || []
     }
+
     prompts: PromptModel[]
     id: PromptId
     constructor() {
         super()
         this.prompts = [PROMPT]
-        this.id = 1
+        this.id = uuidv4()
+    }
+    getNewId: () => Promise<PromptId> = async () => {
+        return uuidv4()
     }
     getPromptById: (id: PromptId) => Promise<PromptModel | undefined> = async (id) => {
         return this.prompts.find(p => p.id === id)
     }
     addPrompt: (prompt: PromptModel) => Promise<void> = async (prompt) => {
-        this.prompts.push({ ...prompt, id: this.id++ })
+        const assignedId = this.id
+        this.prompts.push({ ...prompt, id: assignedId })
+        this.id = await this.getNewId()
+    }
+    addCategoryToPrompt: (id: PromptId, category: string) => Promise<void> = async (id, category) => {
+        const prompt = this.prompts.find(p => p.id === id)
+        prompt?.categories.push(category)
     }
     getRecentPrompts: (limit: number) => Promise<PromptModel[]> = async (limit) => {
         return this.prompts.slice(0, limit)
@@ -48,39 +61,59 @@ export class LocalPromptsRepository extends PromptsRepository {
 
 }
 
-// TODO use another ddb table to search by category
-// pk prompt id, sk category
 export class DDBPromptsRepository extends PromptsRepository {
-    getNextId: () => Promise<number> = async () => {
-        const scanParams = {
+    getPromptCategories: (id: PromptId) => Promise<string[]> = async (id) => {
+        const params = {
             TableName: DDB_PROMPTS_TABLE_NAME,
-            ProjectionExpression: "id",
-            FilterExpression: "attribute_exists(id)",
-            ScanIndexForward: false,
-            Limit: 1,
+            KeyConditionExpression: "id = :idValue AND begins_with(dataType, :dataTypePrefix)",
+            ExpressionAttributeValues: {
+                ":idValue": { S: id },
+                ":dataTypePrefix": { S: "PROMPT_CATEGORY#" },
+            },
+            ProjectionExpression: "category",
         };
 
-        const scanCommand = new ScanCommand(scanParams);
+        const queryCommand = new QueryCommand(params);
 
         try {
-            const response = await DDB_CLIENT.send(scanCommand);
-            if (response.Items && response.Items.length > 0) {
-                const maxId = response.Items[0].id.N || '0'
-                return parseInt(maxId, 10) + 1;
-            } else {
-                return 0;
-            }
+            const response = await DDB_CLIENT.send(queryCommand);
+            const categories: string[] = response.Items?.map((item) => item?.category?.S || "") || [];
+            return categories;
         } catch (err) {
-            console.error("Error getting maximum id:", err);
-
+            console.error("Error retrieving prompt categories:", err);
+            return [];
         }
-        return 0;
-    }
+    };
+    addCategoryToPrompt: (id: PromptId, category: string) => Promise<void> = async (id, category) => {
+        const uuid = uuidv4();
+        const dataType = `PROMPT_CATEGORY#${uuid}`;
+
+        const putItemParams = {
+            TableName: DDB_PROMPTS_TABLE_NAME,
+            Item: {
+                id: { S: id },
+                dataType: { S: dataType },
+                category: { S: category },
+            },
+        };
+
+        const putItemCommand = new PutItemCommand(putItemParams);
+
+        try {
+            const response = await DDB_CLIENT.send(putItemCommand);
+        } catch (err) {
+            console.error("Error adding prompt to DynamoDB:", err);
+        }
+    };
+    getNewId: () => Promise<PromptId> = async () => {
+        return uuidv4()
+    };
     getPromptById: (id: PromptId) => Promise<PromptModel | undefined> = async (id) => {
         const commandProps = {
             TableName: DDB_PROMPTS_TABLE_NAME,
             Key: {
-                id: { N: id.toString() },
+                id: { S: id },
+                dataType: { S: 'PROMPT_DATA' }
             },
         }
         const command = new GetItemCommand(commandProps);
@@ -92,7 +125,7 @@ export class DDBPromptsRepository extends PromptsRepository {
                 return undefined
             }
 
-            const promptModel = this.ddbToPromptModel(response.Item)
+            const promptModel = this.ddbToPromptModel(response.Item, {})
 
             return promptModel
         } catch (err) {
@@ -101,11 +134,11 @@ export class DDBPromptsRepository extends PromptsRepository {
         return undefined
     }
     addPrompt: (inputPrompt: PromptModel) => Promise<void> = async (inputPrompt) => {
-        const id = await this.getNextId()
         const putItemParams = {
             TableName: DDB_PROMPTS_TABLE_NAME,
             Item: {
-                id: { N: id.toString() },
+                id: { S: inputPrompt.id },
+                dataType: { S: "PROMPT_DATA" },
                 title: { S: inputPrompt.title },
                 description: { S: inputPrompt.description },
                 userTextFields: { S: JSON.stringify(inputPrompt.userTextFields) },
@@ -118,7 +151,6 @@ export class DDBPromptsRepository extends PromptsRepository {
 
         try {
             const response = await DDB_CLIENT.send(putItemCommand);
-            console.log("Prompt added successfully:", response.$metadata.httpStatusCode);
         } catch (err) {
             console.error("Error adding prompt to DynamoDB:", err);
         }
@@ -142,11 +174,8 @@ export class DDBPromptsRepository extends PromptsRepository {
                 throw new Error("No items found")
             }
 
-            console.log("DDB Items", ddbItems)
+            const promptModelItems = (ddbItems.map((ddbItem) => this.ddbToPromptModel(ddbItem, {})))
 
-            const promptModelItems = (ddbItems.map((ddbItem) => this.ddbToPromptModel(ddbItem)))
-
-            console.log("prompt model items", promptModelItems)
             return promptModelItems
         } catch (err) {
             console.error("Error getting recent prompts:", err);
@@ -154,16 +183,53 @@ export class DDBPromptsRepository extends PromptsRepository {
         }
     }
 
-    ddbToPromptModel = (ddbObject: any) => {
-        const title = ddbObject.title.S
-        const description = ddbObject.description.S
-        const userTextFields = JSON.parse(ddbObject.userTextFields.S)
-        const img = ddbObject.img.S
-        const promptTexts = JSON.parse(ddbObject.promptTexts.S)
-        const id = ddbObject.id.N
 
-        const promptModel = new PromptModel(title, description, userTextFields, img, promptTexts, id)
+
+    ddbToPromptModel = (promptDataObject: any, promptCategoriesObjects: any) => {
+        const title = promptDataObject.title.S
+        const description = promptDataObject.description.S
+        const userTextFields = JSON.parse(promptDataObject.userTextFields.S)
+        const img = promptDataObject.img.S
+        const promptTexts = JSON.parse(promptDataObject.promptTexts.S)
+        const id = promptDataObject.id.S
+
+        // TODO extract categories
+        const promptModel = new PromptModel(title, description, userTextFields, img, promptTexts, [], id)
         return promptModel
     }
+
+    getNextCategoryIndex = async (id: PromptId): Promise<number> => {
+        const params = {
+            TableName: DDB_PROMPTS_TABLE_NAME,
+            KeyConditionExpression: "id = :id AND begins_with(dataType, :skPrefix)",
+            ExpressionAttributeValues: {
+                ":id": { S: id },
+                ":skPrefix": { S: "PROMPT_CATEGORY#" },
+            },
+            ProjectionExpression: "dataType",
+            ScanIndexForward: true,
+            Limit: 1,
+        };
+
+        const queryCommand = new QueryCommand(params);
+
+        try {
+            const response = await DDB_CLIENT.send(queryCommand);
+            const items = response.Items;
+
+            if (items && items.length > 0) {
+                const lastSk = items[0].dataType.S;
+                if (!lastSk) {
+                    return 1
+                }
+                const lastIndex = parseInt(lastSk.split("#")[1], 10);
+                return lastIndex + 1;
+            }
+        } catch (err) {
+            console.error("Error querying DynamoDB:", err);
+        }
+
+        return 1
+    };
 
 }

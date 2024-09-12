@@ -23,21 +23,13 @@ const FormLine = ({ label, input, parentClassname }: any) => {
 };
 
 export default function PromptForm() {
-  const { user, error, isLoading, checkSession } = useUser();
-  const router = useRouter();
-  useEffect(() => {
-    if (!user && !isLoading) {
-      router.push("/api/auth/login");
-      return;
-    }
-  }, [user, isLoading]);
-
   const [promptFields, setPromptFields] = useState([
     { promptBefore: "", name: "", description: "" },
   ]);
   const [lastPrompt, setLastPrompt] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [categories, setCategories] = useState("");
 
   const addUserField = () => {
     setPromptFields([
@@ -63,6 +55,7 @@ export default function PromptForm() {
         promptTexts,
         promptUserTextFields,
         img: "",
+        categories: categories.split(" "),
       }),
       method: "POST",
     });
@@ -118,6 +111,23 @@ export default function PromptForm() {
                       id="description"
                       onChange={(e) => setDescription(e.target.value)}
                       value={description}
+                      className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    />
+                  </div>
+                </div>
+              }
+            />
+            <FormLine
+              label={"Categories"}
+              input={
+                <div className="mt-1 sm:col-span-2 sm:mt-0">
+                  <div className="flex max-w-lg rounded-md shadow-sm">
+                    <input
+                      type="text"
+                      name="categories"
+                      id="categories"
+                      onChange={(e) => setCategories(e.target.value)}
+                      value={categories}
                       className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                   </div>

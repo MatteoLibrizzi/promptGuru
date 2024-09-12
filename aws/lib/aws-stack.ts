@@ -17,9 +17,7 @@ import {
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment'
-import cloudfront = require('aws-sdk/clients/cloudfront')
 import { Construct } from 'constructs'
-import path = require('path')
 import { LambdaIntegration, LambdaRestApi } from 'aws-cdk-lib/aws-apigateway';
 
 
@@ -31,7 +29,8 @@ export class PromptGuruStack extends cdk.Stack {
 			this,
 			"Prompts",
 			{
-				partitionKey: { name: "id", type: dynamodb.AttributeType.NUMBER },
+				partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
+				sortKey: { name: "dataType", type: dynamodb.AttributeType.STRING },
 				billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
 				removalPolicy: cdk.RemovalPolicy.RETAIN,
 			}
@@ -54,7 +53,8 @@ export class PromptGuruStack extends cdk.Stack {
 		return users
 	}
 
-	// TODO setup user with limited access to assign to vercel
+
+	// TODO setup IAM user with limited access to assign to vercel
 
 	constructor(scope: Construct, id: string, prod: boolean, props?: cdk.StackProps) {
 		super(scope, id, props)

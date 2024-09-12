@@ -4,7 +4,7 @@ import { PromptModel } from "../../Model/Prompt"
 import { addPromptHandler } from "./addPromptHandler"
 import { DDBUsersRepository } from "../../Repositories/users";
 import { createUserIfNotExistent } from "@/app/utils";
-import { DDBPromptsRepository, PromptsRepository } from "../../Repositories/prompts";
+import { DDBPromptsRepository } from "../../Repositories/prompts";
 
 
 export async function POST(request: Request) {
@@ -17,10 +17,8 @@ export async function POST(request: Request) {
 
     const inputFields = await request.json()
 
-    const prompt = new PromptModel(inputFields.title, inputFields.description, inputFields.promptUserTextFields, "", inputFields.promptTexts)
-
     const promptsRepository = new DDBPromptsRepository()
-    await addPromptHandler(promptsRepository, prompt)
+    await addPromptHandler(promptsRepository, inputFields.title, inputFields.description, inputFields.promptUserTextFields, "", inputFields.promptTexts, inputFields.categories)
 
     return Response.json({})
 }

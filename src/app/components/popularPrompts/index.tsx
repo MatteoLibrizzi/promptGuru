@@ -6,11 +6,10 @@ import PromptBox from "../promptDisplay";
 export const PopularPrompts = () => {
   const { data, isLoading, isError } = useQuery({
     queryFn: async () => {
-      console.log("Pop promp");
       const res = await fetch("api/recentPrompts");
       return await res.json();
     },
-    queryKey: ['recentPrompts']
+    queryKey: ["recentPrompts"],
   });
 
   return (

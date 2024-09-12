@@ -5,8 +5,10 @@ import { Fragment, useState } from "react";
 import { classNames } from "@/app/utils";
 import { UserMenuDropdown } from "./UserMenuDropdown";
 import { useQuery } from "react-query";
+import { useAuthOnPage } from "@/app/hooks/useAuthOnPage";
 
 export default function Header() {
+  useAuthOnPage();
   const [open, setOpen] = useState(false);
 
   const {
@@ -18,7 +20,7 @@ export default function Header() {
       const res = await fetch("/api/getAllSubcategories");
       return await res.json();
     },
-    queryKey: ['getAllSubcategories']
+    queryKey: ["getAllSubcategories"],
   });
 
   return (
