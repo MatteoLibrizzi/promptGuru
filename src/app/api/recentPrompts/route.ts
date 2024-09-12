@@ -1,8 +1,9 @@
-import { PROMPTS_REPOSITORY } from "../constants";
+import { DDBPromptsRepository } from "../Repositories/prompts"
 
 
 export async function GET(request: Request) {
 
+    const promptsRepository = new DDBPromptsRepository()
 
-    return Response.json({ prompts: PROMPTS_REPOSITORY.getRecentPrompts(200) })
+    return Response.json({ prompts: await promptsRepository.getRecentPrompts(200) })
 }

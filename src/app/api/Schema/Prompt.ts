@@ -11,3 +11,12 @@ export interface AddPromptSchema {
 export interface UsePromptSchema {
     userTexts: string[]
 }
+
+export interface PromptSchema {
+    title: string;
+    description: string;
+    userTextFields: UserTextField[];
+    img: string;
+    promptTexts: string[];
+    id: string
+}

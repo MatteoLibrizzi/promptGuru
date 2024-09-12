@@ -5,7 +5,6 @@ const FormLine = ({ label: title, subtitle, input }: any) => {
         <label
           htmlFor="title"
           className="text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-          line-
         >
           {title}
         </label>

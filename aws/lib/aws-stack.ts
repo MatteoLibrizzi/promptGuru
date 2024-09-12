@@ -40,6 +40,20 @@ export class PromptGuruStack extends cdk.Stack {
 		return prompts
 	}
 
+	createUsersDDBTable = () => {
+		const users = new dynamodb.Table(
+			this,
+			"Users",
+			{
+				partitionKey: { name: "userId", type: dynamodb.AttributeType.STRING },
+				billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+				removalPolicy: cdk.RemovalPolicy.RETAIN,
+			}
+		)
+
+		return users
+	}
+
 	// TODO setup user with limited access to assign to vercel
 
 	constructor(scope: Construct, id: string, prod: boolean, props?: cdk.StackProps) {
@@ -48,5 +62,6 @@ export class PromptGuruStack extends cdk.Stack {
 		this.prod = prod;
 
 		const promptsDDBTable = this.createPromptsDDBTable()
+		const userCreditsDDBTable = this.createUsersDDBTable()
 	}
 }

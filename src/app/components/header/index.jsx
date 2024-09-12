@@ -1,76 +1,236 @@
 "use client";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Dialog, Popover, Tab, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { Bars3CenterLeftIcon, XMarkIcon } from "@heroicons/react/24/outline";
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+import { classNames } from "@/app/utils";
+import { UserMenuDropdown } from "./UserMenuDropdown";
+import { useQuery } from "react-query";
 
 export default function Header() {
-  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const {
+    data: categories,
+    error: errorCategories,
+    isLoading: isLoadingCategories,
+  } = useQuery({
+    queryFn: async () => {
+      const res = await fetch("/api/getAllSubcategories");
+      return await res.json();
+    },
+    queryKey: ['getAllSubcategories']
+  });
+
   return (
-    <Disclosure as="nav" className="flex-shrink-0 bg-indigo-600">
-      {({ open }) => (
-        <>
-          <div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8">
-            <div className="relative flex h-16 items-center justify-between">
-              {/* Logo section */}
-              <div className="flex items-center px-2 lg:px-0 xl:w-64">
-                <div className="flex-shrink-0">
-                  <img
-                    className="h-8 w-auto"
-                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=300"
-                    alt="Your Company"
-                  />
-                </div>
-              </div>
+    <div className="flex-shrink-0 bg-indigo-600">
+      <div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8">
+        <div className="relative flex h-16 items-center justify-between">
+          {/* Logo section */}
+          <div className="flex items-center px-2 lg:px-0 xl:w-64">
+            <div className="flex-shrink-0">
+              <img
+                className="h-8 w-auto"
+                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=300"
+                alt="Your Company"
+              />
+            </div>
+          </div>
 
-              {/* Search section */}
-              {/* TODO MOve this part to a separate client component and make the rest ssr  */}
-              <div className="flex flex-1 justify-center lg:justify-end">
-                <div className="w-full px-2 lg:px-6">
-                  <label htmlFor="search" className="sr-only">
-                    Search Prompts
-                  </label>
-                  <div className="relative text-indigo-200 focus-within:text-gray-400">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                      <MagnifyingGlassIcon
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <input
-                      id="search"
-                      name="search"
-                      className="block w-full rounded-md border border-transparent bg-indigo-400 bg-opacity-25 py-2 pl-10 pr-3 leading-5 text-indigo-100 placeholder-indigo-200 focus:bg-white focus:text-gray-900 focus:placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
-                      placeholder="Search Prompts"
-                      type="search"
-                      onChange={(e) => setSearch(e.target.value)}
-                      value={search}
-                    />
+          <nav
+            aria-label="Top"
+            className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+          >
+            <div className=" flex h-16 items-center">
+              {/* MOBILE */}
+              <Transition.Root show={open} as={Fragment}>
+                <Dialog
+                  as="div"
+                  className="relative z-40 lg:hidden"
+                  onClose={setOpen}
+                >
+                  <Transition.Child
+                    as={Fragment}
+                    enter="transition-opacity ease-linear duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="transition-opacity ease-linear duration-300"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <div className="fixed inset-0 bg-black bg-opacity-25" />
+                  </Transition.Child>
+
+                  <div className="fixed inset-0 z-40 flex">
+                    <Transition.Child
+                      as={Fragment}
+                      enter="transition ease-in-out duration-300 transform"
+                      enterFrom="-translate-x-full"
+                      enterTo="translate-x-0"
+                      leave="transition ease-in-out duration-300 transform"
+                      leaveFrom="translate-x-0"
+                      leaveTo="-translate-x-full"
+                    >
+                      <Dialog.Panel className="relative flex w-full max-w-xs flex-col overflow-y-auto bg-white pb-12 shadow-xl">
+                        <div className="flex px-4 pt-5 pb-2">
+                          <button
+                            type="button"
+                            className="-m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
+                            onClick={() => setOpen(false)}
+                          >
+                            <span className="sr-only">Close menu</span>
+                            <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                          </button>
+                        </div>
+
+                        <Tab.Group as="div" className="mt-0">
+                          <div className="border-b border-gray-200">
+                            <Tab.List className="-mb-px flex space-x-8 px-4">
+                              <Tab
+                                key="Categories"
+                                className={({ selected }) =>
+                                  classNames(
+                                    selected
+                                      ? "text-indigo-600 border-indigo-600"
+                                      : "text-gray-900 border-transparent",
+                                    "flex-1 whitespace-nowrap border-b-2 py-4 px-1 text-base font-medium"
+                                  )
+                                }
+                              >
+                                Categories
+                              </Tab>
+                            </Tab.List>
+                          </div>
+                          <Tab.Panels as={Fragment}>
+                            <Tab.Panel
+                              key="Categories"
+                              className="space-y-10 px-4 pt-10 pb-8"
+                            >
+                              {categories &&
+                                Object.keys(categories).map((category) => (
+                                  <div key={category}>
+                                    <p
+                                      id={`${category}-heading-mobile`}
+                                      className="font-medium text-gray-900"
+                                    >
+                                      {category}
+                                    </p>
+
+                                    <ul
+                                      role="list"
+                                      aria-labelledby={`${category}-heading-mobile`}
+                                      className="mt-6 flex flex-col space-y-6"
+                                    >
+                                      {categories[category].map(
+                                        (subCategory) => (
+                                          <li
+                                            key={subCategory}
+                                            className="flow-root"
+                                          >
+                                            <a
+                                              href={subCategory}
+                                              className="-m-2 block p-2 text-gray-500"
+                                            >
+                                              {subCategory}
+                                            </a>
+                                          </li>
+                                        )
+                                      )}
+                                    </ul>
+                                  </div>
+                                ))}
+                            </Tab.Panel>
+                          </Tab.Panels>
+                        </Tab.Group>
+                      </Dialog.Panel>
+                    </Transition.Child>
                   </div>
-                </div>
+                </Dialog>
+              </Transition.Root>
+              {/* Full Screen */}
+              <Popover.Group className="hidden lg:ml-8 lg:block lg:self-stretch">
+                <div className="flex h-full space-x-8">
+                  <Popover key={"Categories"} className="flex">
+                    {({ open }) => (
+                      <>
+                        <div className="relative flex">
+                          <Popover.Button
+                            className={classNames(
+                              open
+                                ? "border-indigo-600 text-white"
+                                : "border-transparent text-white hover:text-gray-200",
+                              "relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out"
+                            )}
+                          >
+                            Categories
+                          </Popover.Button>
+                        </div>
 
-                <a href={`/search/${search}`}>Go</a>
-              </div>
-              <div className="flex lg:hidden">
-                {/* Mobile menu button */}
-                <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-indigo-600 p-2 text-indigo-400 hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600">
-                  <span className="sr-only">Open main menu</span>
-                  {open ? (
-                    <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                  ) : (
-                    <Bars3CenterLeftIcon
-                      className="block h-6 w-6"
-                      aria-hidden="true"
-                    />
-                  )}
-                </Disclosure.Button>
-              </div>
-              {/* Links section */}
-              <div className="hidden lg:block lg:w-80">
+                        <Transition
+                          as={Fragment}
+                          enter="transition ease-out duration-200"
+                          enterFrom="opacity-0"
+                          enterTo="opacity-100"
+                          leave="transition ease-in duration-150"
+                          leaveFrom="opacity-100"
+                          leaveTo="opacity-0"
+                        >
+                          <Popover.Panel className="absolute inset-x-0 z-10 top-full text-sm text-gray-500">
+                            {/* Presentational element used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter element to hide the top of the shadow */}
+                            <div
+                              className="absolute inset-0 top-1/2 bg-white shadow"
+                              aria-hidden="true"
+                            />
+
+                            <div className="relative bg-white">
+                              <div className="mx-auto max-w-7xl px-8">
+                                <div className="grid grid-cols-2 gap-y-10 gap-x-8 py-16">
+                                  <div className="row-start-1 grid grid-cols-3 gap-y-10 gap-x-8 text-sm">
+                                    {categories &&
+                                      Object.keys(categories).map(
+                                        (category) => (
+                                          <div key={category}>
+                                            <p
+                                              id={`${category}-heading`}
+                                              className="font-medium text-gray-900"
+                                            >
+                                              {category}
+                                            </p>
+                                            <ul
+                                              role="list"
+                                              aria-labelledby={`${category}-heading`}
+                                              className="mt-6 space-y-6 sm:mt-4 sm:space-y-4"
+                                            >
+                                              {categories[category].map(
+                                                (subCategory) => (
+                                                  <li
+                                                    key={subCategory}
+                                                    className="flex"
+                                                  >
+                                                    <a
+                                                      href={subCategory}
+                                                      className="hover:text-gray-800"
+                                                    >
+                                                      {subCategory}
+                                                    </a>
+                                                  </li>
+                                                )
+                                              )}
+                                            </ul>
+                                          </div>
+                                        )
+                                      )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </Popover.Panel>
+                        </Transition>
+                      </>
+                    )}
+                  </Popover>
+                </div>
+              </Popover.Group>
+              <div className="block w-80 lg:pr-0 pr-10">
                 <div className="flex items-center justify-end">
                   <div className="flex">
                     <a
@@ -81,132 +241,21 @@ export default function Header() {
                     </a>
                   </div>
                   {/* Profile dropdown */}
-                  <Menu as="div" className="relative ml-4 flex-shrink-0">
-                    <div>
-                      <Menu.Button className="flex rounded-full bg-indigo-700 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-700">
-                        <span className="sr-only">Open user menu</span>
-                        <img
-                          className="h-8 w-8 rounded-full"
-                          src="https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=256&h=256&q=80"
-                          alt=""
-                        />
-                      </Menu.Button>
-                    </div>
-                    <Transition
-                      as={Fragment}
-                      enter="transition ease-out duration-100"
-                      enterFrom="transform opacity-0 scale-95"
-                      enterTo="transform opacity-100 scale-100"
-                      leave="transition ease-in duration-75"
-                      leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95"
-                    >
-                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="#"
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
-                              )}
-                            >
-                              View Profile
-                            </a>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="/api/auth/login"
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
-                              )}
-                            >
-                              Login
-                            </a>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="#"
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
-                              )}
-                            >
-                              Settings
-                            </a>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="/api/auth/logout"
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
-                              )}
-                            >
-                              Logout
-                            </a>
-                          )}
-                        </Menu.Item>
-                      </Menu.Items>
-                    </Transition>
-                  </Menu>
+                  <UserMenuDropdown />
                 </div>
               </div>
-            </div>
-          </div>
-
-          <Disclosure.Panel className="lg:hidden">
-            <div className="px-2 pt-2 pb-3">
-              <Disclosure.Button
-                as="a"
-                href="#"
-                className="block rounded-md bg-indigo-800 px-3 py-2 text-base font-medium text-white"
+              <button
+                type="button"
+                className="rounded-md  p-2 text-white lg:hidden"
+                onClick={() => setOpen(true)}
               >
-                Dashboard
-              </Disclosure.Button>
-              <Disclosure.Button
-                as="a"
-                href="#"
-                className="mt-1 block rounded-md px-3 py-2 text-base font-medium text-indigo-200 hover:bg-indigo-600 hover:text-indigo-100"
-              >
-                Support
-              </Disclosure.Button>
+                <span className="sr-only">Open menu</span>
+                <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+              </button>
             </div>
-            <div className="border-t border-indigo-800 pt-4 pb-3">
-              <div className="px-2">
-                <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="block rounded-md px-3 py-2 text-base font-medium text-indigo-200 hover:bg-indigo-600 hover:text-indigo-100"
-                >
-                  Your Profile
-                </Disclosure.Button>
-                <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="mt-1 block rounded-md px-3 py-2 text-base font-medium text-indigo-200 hover:bg-indigo-600 hover:text-indigo-100"
-                >
-                  Settings
-                </Disclosure.Button>
-                <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="mt-1 block rounded-md px-3 py-2 text-base font-medium text-indigo-200 hover:bg-indigo-600 hover:text-indigo-100"
-                >
-                  Sign out
-                </Disclosure.Button>
-              </div>
-            </div>
-          </Disclosure.Panel>
-        </>
-      )}
-    </Disclosure>
+          </nav>
+        </div>
+      </div>
+    </div>
   );
 }

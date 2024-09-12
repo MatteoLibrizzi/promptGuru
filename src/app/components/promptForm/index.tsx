@@ -1,5 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const FormLine = ({ label, input, parentClassname }: any) => {
   return (
@@ -21,6 +23,15 @@ const FormLine = ({ label, input, parentClassname }: any) => {
 };
 
 export default function PromptForm() {
+  const { user, error, isLoading, checkSession } = useUser();
+  const router = useRouter();
+  useEffect(() => {
+    if (!user && !isLoading) {
+      router.push("/api/auth/login");
+      return;
+    }
+  }, [user, isLoading]);
+
   const [promptFields, setPromptFields] = useState([
     { promptBefore: "", name: "", description: "" },
   ]);
@@ -55,7 +66,6 @@ export default function PromptForm() {
       }),
       method: "POST",
     });
-
   };
 
   const removeUserField = (index: number) => {
@@ -64,7 +74,6 @@ export default function PromptForm() {
     setPromptFields(newFields);
   };
 
-  console.log(promptFields);
   return (
     <form className="space-y-8 divide-y divide-gray-200">
       <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">

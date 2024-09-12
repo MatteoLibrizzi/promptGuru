@@ -1,18 +1,20 @@
 export type UserTextField = { name: string, description: string }
 
 export class PromptModel {
-    title: string;
-    description: string;
-    userTextFields: UserTextField[];
-    img: string;
-    promptTexts: string[];
+    public title: string;
+    public description: string;
+    public userTextFields: UserTextField[];
+    public img: string;
+    public promptTexts: string[];
+    public id: number
 
-    constructor(title: string, description: string, userTextFields: UserTextField[], img: string, promptTexts: string[]) {
+    constructor(title: string, description: string, userTextFields: UserTextField[], img: string, promptTexts: string[], id: number) {
         this.title = title;
         this.description = description;
         this.userTextFields = userTextFields;
         this.img = img;
         this.promptTexts = promptTexts;
+        this.id = id
     }
 
     getFilledPrompt = (userText: string[]) => {
@@ -27,16 +29,5 @@ export class PromptModel {
             }
         }
         return acc
-    }
-}
-
-export class InternalPrompt extends PromptModel {
-    id: number;
-
-    static currentId = 0
-
-    constructor(title: string, description: string, userTextFields: UserTextField[], img: string, promptTexts: string[]) {
-        super(title, description, userTextFields, img, promptTexts);
-        this.id = InternalPrompt.currentId++;
     }
 }

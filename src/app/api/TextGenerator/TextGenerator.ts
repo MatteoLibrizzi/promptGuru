@@ -1,4 +1,4 @@
-import { TextGenerationStrategy } from "./strategy";
+import { TextGenerationOutput, TextGenerationStrategy } from "./strategy";
 
 export class TextGenerator {
     private strategy: TextGenerationStrategy;
@@ -7,7 +7,7 @@ export class TextGenerator {
         this.strategy = strategy;
     }
 
-    async generate(input: string): Promise<string> {
+    async generate(input: string): Promise<TextGenerationOutput> {
         return this.strategy.generate(input);
     }
 }

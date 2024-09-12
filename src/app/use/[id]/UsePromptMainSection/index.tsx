@@ -19,6 +19,7 @@ export default function UsePromptMainSection({ id }: any) {
       }
       return await res.json();
     },
+    queryKey: ["prompt", id],
   });
 
   const { user, error, isLoading, checkSession } = useUser();
@@ -52,7 +53,7 @@ export default function UsePromptMainSection({ id }: any) {
       return await res.json();
     },
     enabled: submited,
-    queryKey: userContent,
+    queryKey: ["use", id, userContent],
     onSuccess: (data) => {
       setGeneratedString(data.generated);
     },
@@ -87,29 +88,27 @@ export default function UsePromptMainSection({ id }: any) {
                   {promptData?.userTextFields &&
                     promptData.userTextFields.map((field: any, i: number) => {
                       return (
-                        <>
-                          <FormLine
-                            key={field.name}
-                            label={field.name}
-                            subtitle={field.description}
-                            input={
-                              <textarea
-                                rows={8}
-                                value={userContent[i]}
-                                onChange={(e) => {
-                                  const copy = Object.assign({}, userContent);
+                        <FormLine
+                          key={field.name}
+                          label={field.name}
+                          subtitle={field.description}
+                          input={
+                            <textarea
+                              rows={8}
+                              value={userContent[i]}
+                              onChange={(e) => {
+                                const copy = Object.assign({}, userContent);
 
-                                  copy[i] = e.target.value;
+                                copy[i] = e.target.value;
 
-                                  setUserContent(copy);
-                                }}
-                                name={field.fieldName}
-                                id={field.fieldName}
-                                className="block h-12 p-2 w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 border-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                              />
-                            }
-                          />
-                        </>
+                                setUserContent(copy);
+                              }}
+                              name={field.fieldName}
+                              id={field.fieldName}
+                              className="block h-12 p-2 w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 border-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            />
+                          }
+                        />
                       );
                     })}
                 </div>
