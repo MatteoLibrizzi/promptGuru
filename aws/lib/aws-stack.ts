@@ -35,6 +35,14 @@ export class PromptGuruStack extends cdk.Stack {
 				removalPolicy: cdk.RemovalPolicy.RETAIN,
 			}
 		)
+		// prompts.addGlobalSecondaryIndex(
+		// 	{
+		// 		indexName: "DataTypeIndex",
+		// 		partitionKey: { name: "dataType", type: dynamodb.AttributeType.STRING },
+		// 		projectionType: dynamodb.ProjectionType.ALL,
+
+		// 	},
+		// )
 
 		return prompts
 	}

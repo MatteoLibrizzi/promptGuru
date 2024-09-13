@@ -1,7 +1,9 @@
 "use client";
-import { useUser } from "@auth0/nextjs-auth0/client";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { classNames } from "@/app/utils";
+import { Disclosure } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+import { useQuery } from "react-query";
 
 const FormLine = ({ label, input, parentClassname }: any) => {
   return (
@@ -23,13 +25,30 @@ const FormLine = ({ label, input, parentClassname }: any) => {
 };
 
 export default function PromptForm() {
+  const { data: dataSubcategories } = useQuery({
+    queryFn: async () => {
+      const res = await fetch("api/getAllSubcategories");
+      return await res.json();
+    },
+    queryKey: ["getAllSubcategories"],
+  });
   const [promptFields, setPromptFields] = useState([
     { promptBefore: "", name: "", description: "" },
   ]);
   const [lastPrompt, setLastPrompt] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [categories, setCategories] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
+
+  const addCategory = (category: string) => {
+    const copy = [...categories];
+    copy.push(category);
+    setCategories(copy);
+  };
+  const removeCategory = (category: string) => {
+    const updatedCategories = categories.filter((cat) => cat !== category);
+    setCategories(updatedCategories);
+  };
 
   const addUserField = () => {
     setPromptFields([
@@ -55,7 +74,7 @@ export default function PromptForm() {
         promptTexts,
         promptUserTextFields,
         img: "",
-        categories: categories.split(" "),
+        categories: categories,
       }),
       method: "POST",
     });
@@ -66,6 +85,8 @@ export default function PromptForm() {
     newFields.splice(index, 1);
     setPromptFields(newFields);
   };
+
+  console.log(dataSubcategories);
 
   return (
     <form className="space-y-8 divide-y divide-gray-200">
@@ -117,23 +138,7 @@ export default function PromptForm() {
                 </div>
               }
             />
-            <FormLine
-              label={"Categories"}
-              input={
-                <div className="mt-1 sm:col-span-2 sm:mt-0">
-                  <div className="flex max-w-lg rounded-md shadow-sm">
-                    <input
-                      type="text"
-                      name="categories"
-                      id="categories"
-                      onChange={(e) => setCategories(e.target.value)}
-                      value={categories}
-                      className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-              }
-            />
+
             <FormLine
               label={"Picture"}
               // TODO integrate with cloudinary https://console.cloudinary.com/pm/c-63cae420540f4e9e453e056f3304e1/media-explorer
@@ -159,6 +164,96 @@ export default function PromptForm() {
                 </div>
               }
             />
+
+            <Disclosure as="div" className="pt-4 border-gray-200">
+              {({ open }) => (
+                <>
+                  <Disclosure.Button className="flex w-full items-center justify-between bg-white px-2 py-3 text-sm text-gray-400">
+                    <h1 className="font-bold text-lg text-gray-900">
+                      Categories
+                    </h1>
+                    <div className="grid grid-cols-4 gap-6">
+                      {categories.map((category, idx) => (
+                        <p key={category} className={`w-16 overflow-clip`}>
+                          {category}
+                        </p>
+                      ))}
+                    </div>
+                    <span className="ml-6 flex items-center">
+                      <ChevronDownIcon
+                        className={classNames(
+                          open ? "-rotate-180" : "rotate-0",
+                          "h-5 w-5 transform"
+                        )}
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </Disclosure.Button>
+
+                  <Disclosure.Panel className="">
+                    <div className="">
+                      {dataSubcategories &&
+                        Object.keys(dataSubcategories).map((category) => (
+                          <div key={category} className="">
+                            <Disclosure
+                              as="div"
+                              className="pt-2 border-gray-200"
+                            >
+                              {({ open }) => (
+                                <div className="ml-16">
+                                  <Disclosure.Button className="flex w-80 items-center justify-between bg-white py-3 text-sm text-gray-400">
+                                    <h1 className="font-bold text-medium text-gray-900">
+                                      {category}
+                                    </h1>
+                                    <span className="ml-6 flex items-center">
+                                      <ChevronDownIcon
+                                        className={classNames(
+                                          open ? "-rotate-180" : "rotate-0",
+                                          "h-5 w-5 transform"
+                                        )}
+                                        aria-hidden="true"
+                                      />
+                                    </span>
+                                  </Disclosure.Button>
+                                  <Disclosure.Panel className="pt-2">
+                                    {dataSubcategories[category].map(
+                                      (subCategory: string, idx: number) => (
+                                        <div
+                                          key={`${category}-${subCategory}`}
+                                          className="flex items-center ml-16"
+                                        >
+                                          <input
+                                            id={`filter-mobile-${idx}`}
+                                            type="checkbox"
+                                            onChange={(e) => {
+                                              if (e.target.checked) {
+                                                addCategory(subCategory);
+                                              } else {
+                                                removeCategory(subCategory);
+                                              }
+                                            }}
+                                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                          />
+                                          <label
+                                            htmlFor={`filter-mobile-${idx}`}
+                                            className="ml-3 text-sm text-gray-500"
+                                          >
+                                            {subCategory}
+                                          </label>
+                                        </div>
+                                      )
+                                    )}
+                                  </Disclosure.Panel>
+                                </div>
+                              )}
+                            </Disclosure>
+                          </div>
+                        ))}
+                    </div>
+                  </Disclosure.Panel>
+                </>
+              )}
+            </Disclosure>
           </div>
         </div>
 

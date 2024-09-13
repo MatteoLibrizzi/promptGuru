@@ -61,14 +61,19 @@ export class LocalPromptsRepository extends PromptsRepository {
 
 }
 
+enum DataType {
+    PROMPT_CATEGORY = "PROMPT_CATEGORY",
+    PROMPT_DATA = "PROMPT_DATA"
+}
 export class DDBPromptsRepository extends PromptsRepository {
+
     getPromptCategories: (id: PromptId) => Promise<string[]> = async (id) => {
         const params = {
             TableName: DDB_PROMPTS_TABLE_NAME,
             KeyConditionExpression: "id = :idValue AND begins_with(dataType, :dataTypePrefix)",
             ExpressionAttributeValues: {
                 ":idValue": { S: id },
-                ":dataTypePrefix": { S: "PROMPT_CATEGORY#" },
+                ":dataTypePrefix": { S: `${DataType.PROMPT_CATEGORY}#` },
             },
             ProjectionExpression: "category",
         };
@@ -86,7 +91,7 @@ export class DDBPromptsRepository extends PromptsRepository {
     };
     addCategoryToPrompt: (id: PromptId, category: string) => Promise<void> = async (id, category) => {
         const uuid = uuidv4();
-        const dataType = `PROMPT_CATEGORY#${uuid}`;
+        const dataType = `${DataType.PROMPT_CATEGORY}#${uuid}`;
 
         const putItemParams = {
             TableName: DDB_PROMPTS_TABLE_NAME,
@@ -109,23 +114,24 @@ export class DDBPromptsRepository extends PromptsRepository {
         return uuidv4()
     };
     getPromptById: (id: PromptId) => Promise<PromptModel | undefined> = async (id) => {
-        const commandProps = {
+        const promptDataCommandProps = {
             TableName: DDB_PROMPTS_TABLE_NAME,
             Key: {
                 id: { S: id },
-                dataType: { S: 'PROMPT_DATA' }
+                dataType: { S: DataType.PROMPT_DATA }
             },
         }
-        const command = new GetItemCommand(commandProps);
+        const promptDataCommand = new GetItemCommand(promptDataCommandProps);
 
         try {
-            const response = await DDB_CLIENT.send(command);
+            const response = await DDB_CLIENT.send(promptDataCommand);
+            const categories = await this.getPromptCategories(id)
 
             if (!response.Item) {
                 return undefined
             }
 
-            const promptModel = this.ddbToPromptModel(response.Item, {})
+            const promptModel = this.ddbToPromptModel(response.Item, categories)
 
             return promptModel
         } catch (err) {
@@ -138,7 +144,7 @@ export class DDBPromptsRepository extends PromptsRepository {
             TableName: DDB_PROMPTS_TABLE_NAME,
             Item: {
                 id: { S: inputPrompt.id },
-                dataType: { S: "PROMPT_DATA" },
+                dataType: { S: DataType.PROMPT_DATA },
                 title: { S: inputPrompt.title },
                 description: { S: inputPrompt.description },
                 userTextFields: { S: JSON.stringify(inputPrompt.userTextFields) },
@@ -156,36 +162,62 @@ export class DDBPromptsRepository extends PromptsRepository {
         }
     }
 
+
     getRecentPrompts: (limit: number) => Promise<PromptModel[]> = async (limit) => {
-        const queryParams = {
+        const scanParams = {
             TableName: DDB_PROMPTS_TABLE_NAME,
             Limit: limit,
             ScanIndexForward: false,
+            FilterExpression: 'begins_with(dataType, :dataTypePrefix)',
+            ExpressionAttributeValues: {
+                ':dataTypePrefix': { S: `${DataType.PROMPT_DATA}` },
+            },
         };
 
-        const queryCommand = new ScanCommand(queryParams);
+        const scanCommand = new ScanCommand(scanParams);
 
         try {
-            const response = await DDB_CLIENT.send(queryCommand);
+            const response = await DDB_CLIENT.send(scanCommand);
 
-            const ddbItems = response.Items
+            const ddbItems = response.Items;
+
+            const categoriesGroupedByPromptId: Record<string, string[]> = {}
+            const categoriesPromises = ddbItems?.map(async (item) => {
+                const id = item.id?.S;
+                if (!id) {
+                    throw new Error("Missing ID in prompt")
+                }
+                const categories = await this.getPromptCategories(id);
+                return { id, categories };
+            }) || [];
+
+            const categoriesResults = await Promise.all(categoriesPromises);
+
+            categoriesResults.forEach(({ id, categories }: any) => {
+                if (id && categories) {
+                    categoriesGroupedByPromptId[id] = categories;
+                }
+            });
 
             if (!ddbItems) {
-                throw new Error("No items found")
+                throw new Error("No items found");
             }
 
-            const promptModelItems = (ddbItems.map((ddbItem) => this.ddbToPromptModel(ddbItem, {})))
+            const promptModelItems = ddbItems.map((ddbItem) => {
+                if (!ddbItem.id?.S) {
+                    throw new Error("Missing ID in prompt")
+                }
+                return this.ddbToPromptModel(ddbItem, categoriesGroupedByPromptId[ddbItem.id.S])
+            });
 
-            return promptModelItems
+            return promptModelItems;
         } catch (err) {
             console.error("Error getting recent prompts:", err);
             return [];
         }
-    }
+    };
 
-
-
-    ddbToPromptModel = (promptDataObject: any, promptCategoriesObjects: any) => {
+    ddbToPromptModel = (promptDataObject: any, promptCategoriesObjects: string[]) => {
         const title = promptDataObject.title.S
         const description = promptDataObject.description.S
         const userTextFields = JSON.parse(promptDataObject.userTextFields.S)
@@ -193,8 +225,7 @@ export class DDBPromptsRepository extends PromptsRepository {
         const promptTexts = JSON.parse(promptDataObject.promptTexts.S)
         const id = promptDataObject.id.S
 
-        // TODO extract categories
-        const promptModel = new PromptModel(title, description, userTextFields, img, promptTexts, [], id)
+        const promptModel = new PromptModel(title, description, userTextFields, img, promptTexts, promptCategoriesObjects, id)
         return promptModel
     }
 
@@ -204,7 +235,7 @@ export class DDBPromptsRepository extends PromptsRepository {
             KeyConditionExpression: "id = :id AND begins_with(dataType, :skPrefix)",
             ExpressionAttributeValues: {
                 ":id": { S: id },
-                ":skPrefix": { S: "PROMPT_CATEGORY#" },
+                ":skPrefix": { S: `${DataType.PROMPT_CATEGORY}#` },
             },
             ProjectionExpression: "dataType",
             ScanIndexForward: true,

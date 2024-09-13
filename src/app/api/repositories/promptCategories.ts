@@ -9,9 +9,10 @@ export abstract class PromptCategoriesRepository {
 export class HardcodedPromptCategoriesRepository extends PromptCategoriesRepository {
     categories: Record<string, string[]> = {
         "Productivity": ["Job Search"],
-        "Poetry": [],
-        "Conversation": [],
-        "Funny": []
+        "Creative Writing": ["Poems", "Novels"],
+        "Conversation": ["Inspiring Conversations", "Science"],
+        "Funny": ["Memes"],
+        "Movies": ["Fact checking", "Movie Summaries"]
     }
 
     getCategories: () => Promise<string[]> = async () => {
