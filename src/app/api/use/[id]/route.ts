@@ -3,7 +3,7 @@ import { getSession, Session } from "@auth0/nextjs-auth0";
 import { TextGenerator } from "@/app/api/TextGenerator/TextGenerator";
 import { MockStrategy } from "@/app/api/TextGenerator/mockStrategy";
 import { createUserIfNotExistent } from "@/app/utils";
-import { DDBPromptsRepository } from "@/app/api/Repositories/prompts";
+import { DDBPromptsRepository } from "@/app/api/repositories/prompts";
 
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {

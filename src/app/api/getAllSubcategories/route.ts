@@ -1,4 +1,4 @@
-import { HardcodedPromptCategoriesRepository } from "@/app/api/Repositories/promptCategories"
+import { HardcodedPromptCategoriesRepository } from "@/app/api/repositories/promptCategories"
 
 export default async function GET(request: Request) {
 

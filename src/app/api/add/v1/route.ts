@@ -1,7 +1,7 @@
 import { getSession, Session } from "@auth0/nextjs-auth0"
 import { addPromptHandler } from "@/app/api/add/v1/addPromptHandler"
-import { DDBPromptsRepository } from "@/app/api/Repositories/prompts";
-import { DDBUsersRepository } from "@/app/api/Repositories/users";
+import { DDBPromptsRepository } from "@/app/api/repositories/prompts";
+import { DDBUsersRepository } from "@/app/api/repositories/users";
 
 
 export async function POST(request: Request) {
