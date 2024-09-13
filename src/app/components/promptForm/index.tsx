@@ -98,7 +98,7 @@ export default function PromptForm() {
             </h3>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">
               This Prompt will be available to use to the public, you will be
-              paid based on its usage following this guidelines
+              paid based on its usage following this guidelines.
               {/* TODO provide link to pdf with explanation */}
             </p>
           </div>
