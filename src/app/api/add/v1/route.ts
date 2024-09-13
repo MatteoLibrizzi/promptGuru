@@ -1,10 +1,7 @@
 import { getSession, Session } from "@auth0/nextjs-auth0"
-import { FREE_CREDITS_CENTS } from "../../constants"
-import { PromptModel } from "../../Model/Prompt"
-import { addPromptHandler } from "./addPromptHandler"
-import { DDBUsersRepository } from "../../Repositories/users";
+import { addPromptHandler } from "@/app/api/add/v1/addPromptHandler"
 import { createUserIfNotExistent } from "@/app/utils";
-import { DDBPromptsRepository } from "../../Repositories/prompts";
+import { DDBPromptsRepository } from "@/app/api/Repositories/prompts";
 
 
 export async function POST(request: Request) {

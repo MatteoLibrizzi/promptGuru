@@ -1,4 +1,4 @@
-import { UserTextField } from "../Model/Prompt";
+import { UserTextField } from "@/app/api/Model/Prompt";
 
 export interface AddPromptSchema {
     title: string;

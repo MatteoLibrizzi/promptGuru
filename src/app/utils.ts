@@ -1,5 +1,5 @@
-import { FREE_CREDITS_CENTS } from "./api/constants"
-import { DDBUsersRepository } from "./api/Repositories/users"
+import { FREE_CREDITS_CENTS } from "@/app/api/constants"
+import { DDBUsersRepository } from "@/app/api/Repositories/users"
 
 export const createUserIfNotExistent = async (userId: string) => {
 

@@ -1,5 +1,5 @@
-import { AttributeValue, GetItemCommand, PutItemCommand, PutItemCommandInput } from "@aws-sdk/client-dynamodb"
-import { DDB_CLIENT, DDB_USERS_TABLE_NAME } from "../constants"
+import { GetItemCommand, PutItemCommand, PutItemCommandInput } from "@aws-sdk/client-dynamodb"
+import { DDB_CLIENT, DDB_USERS_TABLE_NAME } from "@/app/api/constants"
 
 export abstract class UsersRepository {
 

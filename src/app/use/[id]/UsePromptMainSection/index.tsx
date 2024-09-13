@@ -1,6 +1,6 @@
 "use client";
 import { isError, useQuery } from "react-query";
-import FormLine from "../../../components/formLine";
+import FormLine from "@/app/components/formLine";
 import { useEffect, useState } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/navigation";

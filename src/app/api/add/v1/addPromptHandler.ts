@@ -1,5 +1,5 @@
-import { PromptModel, UserTextField } from "../../Model/Prompt";
-import { PromptsRepository } from "../../Repositories/prompts";
+import { PromptModel, UserTextField } from "@/app/api/Model/Prompt";
+import { PromptsRepository } from "@/app/api/Repositories/prompts";
 
 export const addPromptHandler = async (promptsRepository: PromptsRepository, title: string, description: string, userTextFields: UserTextField[], img: string, promptTexts: string[], categories: string[]) => {
     const id = await promptsRepository.getNewId()

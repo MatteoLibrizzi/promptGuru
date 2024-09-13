@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "react-query";
-import PromptBox from "../promptDisplay";
+import PromptBox from "@/app/components/promptDisplay";
 
 export const PopularPrompts = () => {
   const { data, isLoading, isError } = useQuery({

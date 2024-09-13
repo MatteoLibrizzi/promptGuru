@@ -1,4 +1,4 @@
-import PromptForm from "../components/promptForm";
+import PromptForm from "@/app/components/promptForm";
 export default function Add() {
   return (
     <>

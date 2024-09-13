@@ -1,17 +1,7 @@
 "use client";
 import { classNames } from "@/app/utils";
-import {
-  HomeIcon,
-  UsersIcon,
-  FolderIcon,
-  CalendarIcon,
-  InboxIcon,
-  ChartBarIcon,
-  XMarkIcon,
-} from "@heroicons/react/20/solid";
-import TailwindTest from "../../components/tailwindTest";
-import { Transition, Dialog } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { HomeIcon, UsersIcon } from "@heroicons/react/20/solid";
+import { useState } from "react";
 
 // TODO use this
 const UserPage = ({ params }: { params: { id: string } }) => {

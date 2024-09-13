@@ -1,11 +1,9 @@
 import { getSession, Session } from "@auth0/nextjs-auth0";
 
-import { TextGenerator } from "../../TextGenerator/TextGenerator";
-import { OpenAIStrategy } from "../../TextGenerator/openAIStrategy";
-import { MockStrategy } from "../../TextGenerator/mockStrategy";
-import { DDBUsersRepository } from "../../Repositories/users";
+import { TextGenerator } from "@/app/api/TextGenerator/TextGenerator";
+import { MockStrategy } from "@/app/api/TextGenerator/mockStrategy";
 import { createUserIfNotExistent } from "@/app/utils";
-import { DDBPromptsRepository } from "../../Repositories/prompts";
+import { DDBPromptsRepository } from "@/app/api/Repositories/prompts";
 
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
@@ -19,7 +17,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     const promptsRepository = new DDBPromptsRepository()
 
-    const prompt = await promptsRepository.getPromptById(Number(params.id))
+    const prompt = await promptsRepository.getPromptById(params.id)
 
     if (!prompt) {
         return Response.json({ error: "Prompt not found" }, { status: 404 })

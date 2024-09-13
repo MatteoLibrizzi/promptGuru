@@ -1,4 +1,4 @@
-import { DDBPromptsRepository } from "../../Repositories/prompts"
+import { DDBPromptsRepository } from "@/app/api/Repositories/prompts"
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
 

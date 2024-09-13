@@ -1,6 +1,6 @@
 import { GetItemCommand, PutItemCommand, QueryCommand, ScanCommand, UpdateItemCommand } from "@aws-sdk/client-dynamodb"
-import { PromptModel } from "../Model/Prompt"
-import { DDB_CLIENT, DDB_PROMPTS_TABLE_NAME } from "../constants"
+import { PromptModel } from "@/app/api/Model/Prompt"
+import { DDB_CLIENT, DDB_PROMPTS_TABLE_NAME } from "@/app/api/constants"
 import { v4 as uuidv4 } from 'uuid';
 
 export type PromptId = string

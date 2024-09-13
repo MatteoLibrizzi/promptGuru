@@ -1,4 +1,4 @@
-import { PopularPrompts } from "./components/popularPrompts";
+import { PopularPrompts } from "@/app/components/popularPrompts";
 
 export default function Main() {
   return (

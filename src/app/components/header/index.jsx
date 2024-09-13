@@ -3,7 +3,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog, Popover, Tab, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { classNames } from "@/app/utils";
-import { UserMenuDropdown } from "./UserMenuDropdown";
+import { UserMenuDropdown } from "@/app/UserMenuDropdown";
 import { useQuery } from "react-query";
 import { useAuthOnPage } from "@/app/hooks/useAuthOnPage";
 

@@ -1,4 +1,4 @@
-import { PromptId } from "../Repositories/prompts";
+import { PromptId } from "@/app/api/Repositories/prompts";
 
 export type UserTextField = { name: string, description: string }
 

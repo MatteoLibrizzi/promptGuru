@@ -1,4 +1,4 @@
-import { TextGenerationOutput, TextGenerationStrategy } from "./strategy";
+import { TextGenerationOutput, TextGenerationStrategy } from "@/app/api/TextGenerator/strategy";
 
 export class TextGenerator {
     private strategy: TextGenerationStrategy;
