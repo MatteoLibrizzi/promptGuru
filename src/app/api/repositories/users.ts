@@ -1,11 +1,12 @@
 import { GetItemCommand, PutItemCommand, PutItemCommandInput } from "@aws-sdk/client-dynamodb"
-import { DDB_CLIENT, DDB_USERS_TABLE_NAME } from "@/app/api/constants"
+import { DDB_CLIENT, DDB_USERS_TABLE_NAME, FREE_CREDITS_CENTS } from "@/app/api/constants"
 
 export abstract class UsersRepository {
 
     abstract getUserCredits: (userId: string) => Promise<number>
     abstract createNewUser: (userInput: UserInput) => Promise<void>
     abstract isExistingUser: (userId: string) => Promise<boolean>
+    abstract createUserIfNotExistent: (userId: string) => Promise<void>
 }
 
 
@@ -16,6 +17,14 @@ export interface UserInput {
 
 
 export class DDBUsersRepository extends UsersRepository {
+    createUserIfNotExistent: (userId: string) => Promise<void> = async (userId) => {
+        const usersRepositories = new DDBUsersRepository()
+
+        const isExistingUser = await usersRepositories.isExistingUser(userId)
+        if (!isExistingUser) {
+            await usersRepositories.createNewUser({ userId: userId, credits: FREE_CREDITS_CENTS })
+        }
+    }
     isExistingUser = async (userId: UserId) => {
         const commandProps = {
             TableName: DDB_USERS_TABLE_NAME,

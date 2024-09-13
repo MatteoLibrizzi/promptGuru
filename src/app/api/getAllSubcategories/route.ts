@@ -1,6 +1,6 @@
 import { HardcodedPromptCategoriesRepository } from "@/app/api/Repositories/promptCategories"
 
-export async function GET(request: Request) {
+export default async function GET(request: Request) {
 
     const promptsRepository = new HardcodedPromptCategoriesRepository()
 

@@ -1,7 +1,7 @@
 import { getSession, Session } from "@auth0/nextjs-auth0"
 import { addPromptHandler } from "@/app/api/add/v1/addPromptHandler"
-import { createUserIfNotExistent } from "@/app/utils";
 import { DDBPromptsRepository } from "@/app/api/Repositories/prompts";
+import { DDBUsersRepository } from "@/app/api/Repositories/users";
 
 
 export async function POST(request: Request) {
@@ -10,7 +10,9 @@ export async function POST(request: Request) {
         const res = Response.json({ error: 'User is not authenticated', }, { status: 401 })
         return res
     }
-    await createUserIfNotExistent(session.user.sub)
+
+    const usersRepository = new DDBUsersRepository()
+    await usersRepository.createUserIfNotExistent(session.user.sub)
 
     const inputFields = await request.json()
 
