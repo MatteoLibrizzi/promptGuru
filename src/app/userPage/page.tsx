@@ -2,6 +2,8 @@
 import { classNames } from "@/app/utils";
 import { HomeIcon, UsersIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
+import { useQuery } from "react-query";
+import { UserUsage } from "../components/userUsage";
 
 // TODO use this
 const UserPage = ({ params }: { params: { id: string } }) => {
@@ -9,7 +11,7 @@ const UserPage = ({ params }: { params: { id: string } }) => {
 
   const navigation = [
     { name: "Usage", href: "#", icon: HomeIcon },
-    { name: "Created Prompts", href: "#", icon: UsersIcon },
+    { name: "Created Prompts", href: "#", icon: UsersIcon },// TODO create api and repo method to get the prompts by user
   ];
 
   return (
@@ -59,6 +61,7 @@ const UserPage = ({ params }: { params: { id: string } }) => {
               {/* Start main area*/}
               <div className="relative h-full" style={{ minHeight: "36rem" }}>
                 Dashboard
+                {selectedTab === "Usage" && <UserUsage />}
               </div>
               {/* End main area */}
             </div>

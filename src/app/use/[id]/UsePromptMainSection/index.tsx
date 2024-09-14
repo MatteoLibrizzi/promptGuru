@@ -1,6 +1,6 @@
 "use client";
-import { isError, useQuery } from "react-query";
-import FormLine from "@/app/components/formLine";
+import { useQuery } from "react-query";
+import FormLine from "@/app/components/dataDisplayLine";
 import { useEffect, useState } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/navigation";
@@ -92,7 +92,7 @@ export default function UsePromptMainSection({ id }: any) {
                           key={field.name}
                           label={field.name}
                           subtitle={field.description}
-                          input={
+                          value={
                             <textarea
                               rows={8}
                               value={userContent[i]}

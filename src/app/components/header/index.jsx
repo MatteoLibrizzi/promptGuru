@@ -18,6 +18,11 @@ export default function Header() {
   } = useQuery({
     queryFn: async () => {
       const res = await fetch("/api/getAllSubcategories");
+
+      if (!res.ok) {
+        throw new Error("Prompt not found");
+      }
+      
       return await res.json();
     },
     queryKey: ["getAllSubcategories"],
@@ -129,7 +134,7 @@ export default function Header() {
                                             className="flow-root"
                                           >
                                             <a
-                                              href={subCategory}
+                                              href={`/category/${subCategory}`}
                                               className="-m-2 block p-2 text-gray-500"
                                             >
                                               {subCategory}
@@ -209,7 +214,7 @@ export default function Header() {
                                                     className="flex"
                                                   >
                                                     <a
-                                                      href={subCategory}
+                                                      href={`/category/${subCategory}`}
                                                       className="hover:text-gray-800"
                                                     >
                                                       {subCategory}

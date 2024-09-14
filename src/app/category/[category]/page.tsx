@@ -1,6 +1,8 @@
-import { PopularPrompts } from "@/app/components/promptsAll";
+import { PromptsByCategory } from "@/app/components/promptsByCategory";
 
-export default function Main() {
+export default function Category({ params }: any) {
+  console.log(params.category);
+
   return (
     <>
       {/* Background color split screen for large screens */}
@@ -27,8 +29,8 @@ export default function Main() {
                 {/* Start main area*/}
                 <div className="relative h-full" style={{ minHeight: "36rem" }}>
                   {/* <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" /> */}
-                  <h1 className="pb-10">Prompts</h1>
-                  <PopularPrompts />
+                  <h1 className="pb-10">Category</h1>
+                  <PromptsByCategory category={params.category} />
                 </div>
 
                 {/* End main area */}

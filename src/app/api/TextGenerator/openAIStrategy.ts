@@ -1,14 +1,23 @@
 import OpenAI from 'openai';
 import { TextGenerationOutput, TextGenerationStrategy } from './strategy';
+import { PriceProvider } from '../PriceProvider';
+import { OpenAIPriceProvider } from '../PriceProvider/openAIPriceProvider';
+import { DDBUsersRepository, UsersRepository } from '../repositories/users';
 
-export class OpenAIStrategy implements TextGenerationStrategy {
+export class OpenAIStrategy extends TextGenerationStrategy {
     private openai: OpenAI;
+    priceProvider: PriceProvider;
+    usersRepository: UsersRepository;
 
-    constructor(apiKey: string) {
+    constructor(apiKey: string, usersRepository: UsersRepository) {
+        super()
         this.openai = new OpenAI({ apiKey });
+        this.priceProvider = new OpenAIPriceProvider()
+        this.usersRepository = usersRepository
     }
 
-    async generate(input: string): Promise<TextGenerationOutput> {
+
+    generate = async (input: string) => {
         const response = await this.openai.chat.completions.create({
             model: "gpt-4o-mini-2024-07-18",
             messages: [

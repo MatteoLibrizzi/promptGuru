@@ -9,9 +9,10 @@ export class PromptModel {
     public img: string;
     public promptTexts: string[];
     public categories: string[]
+    public userCreatorId: string
     public id: PromptId
 
-    constructor(title: string, description: string, userTextFields: UserTextField[], img: string, promptTexts: string[], categories: string[], id: PromptId) {
+    constructor(title: string, description: string, userTextFields: UserTextField[], img: string, promptTexts: string[], categories: string[], id: PromptId, userCreatorId: string) {
         this.title = title;
         this.description = description;
         this.userTextFields = userTextFields;
@@ -19,6 +20,7 @@ export class PromptModel {
         this.promptTexts = promptTexts;
         this.id = id
         this.categories = categories
+        this.userCreatorId = userCreatorId
     }
 
     getFilledPrompt = (userText: string[]) => {

@@ -7,7 +7,7 @@ export class TextGenerator {
         this.strategy = strategy;
     }
 
-    async generate(input: string): Promise<TextGenerationOutput> {
-        return this.strategy.generate(input);
+    async generate(input: string, userId: string, promptId: string): Promise<TextGenerationOutput> {
+        return this.strategy.generate(input, userId, promptId);
     }
 }

@@ -3,20 +3,26 @@
 import { useQuery } from "react-query";
 import PromptBox from "@/app/components/promptDisplay";
 
-export const PopularPrompts = () => {
+export const PromptsByCategory = ({ category }: any) => {
   const { data, isLoading, isError } = useQuery({
     queryFn: async () => {
-      const res = await fetch("api/recentPrompts");
+      const res = await fetch(`/api/prompts/category/${category}`);
+
+      if (!res.ok) {
+        throw new Error("Prompt not found");
+      }
+
       return await res.json();
     },
     queryKey: ["recentPrompts"],
+    retry: 1,
   });
 
   return (
     <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8">
       {!isLoading &&
         !isError &&
-        data?.prompts?.length &&
+        data?.prompts &&
         data.prompts.map((prompt: any) => {
           return (
             <PromptBox
@@ -29,6 +35,7 @@ export const PopularPrompts = () => {
           );
         })}
       {isLoading && <h1>Loading...</h1>}
+      {isError && <h1>Error...</h1>}
     </div>
   );
 };

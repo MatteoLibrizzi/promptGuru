@@ -27,7 +27,12 @@ const FormLine = ({ label, input, parentClassname }: any) => {
 export default function PromptForm() {
   const { data: dataSubcategories } = useQuery({
     queryFn: async () => {
-      const res = await fetch("api/getAllSubcategories");
+      const res = await fetch("/api/getAllSubcategories");
+
+      if (!res.ok) {
+        throw new Error("Prompt not found");
+      }
+
       return await res.json();
     },
     queryKey: ["getAllSubcategories"],

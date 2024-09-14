@@ -25,13 +25,13 @@ export async function POST(request: Request, { params }: { params: { id: string 
         return Response.json({ error: "Prompt not found" }, { status: 404 })
     }
 
-    const strategy = new MockStrategy("will be returned") // new OpenAIStrategy(OPENAI_API_KEY)/
+    const strategy = new MockStrategy("will be returned", usersRepository) // new OpenAIStrategy(OPENAI_API_KEY)/
     const textGenerator = new TextGenerator(strategy)
 
     const userTextObject = await request.json()
     const userText = Object.keys(userTextObject).map(k => userTextObject[k])
 
-    const textGenerationOutput = await textGenerator.generate(prompt.getFilledPrompt(userText))
+    const textGenerationOutput = await textGenerator.generate(prompt.getFilledPrompt(userText), session.user.sub, prompt.id)
 
     return Response.json({ generated: textGenerationOutput.output })
 }
