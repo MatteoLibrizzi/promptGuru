@@ -23,7 +23,10 @@ const PromptBox = ({ title, id, description, img, categories }: any) => {
         <div className="flex flex-wrap gap-2">
           {categories &&
             categories.map((category: string) => (
-              <p className="text-xs text-gray-500 rounded-xl p-1 border border-gray-900">
+              <p
+                key={category}
+                className="text-xs text-gray-500 rounded-xl p-1 border border-gray-900"
+              >
                 {category}
               </p>
             ))}
