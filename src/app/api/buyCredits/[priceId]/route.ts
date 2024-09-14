@@ -1,7 +1,9 @@
 import { DDBUsersRepository } from "@/app/api/repositories/users";
 import { getSession, Session } from "@auth0/nextjs-auth0";
-import { STRIPE } from "../../constants";
+import { STRIPE, STRIPE_CANCEL_URL, STRIPE_SUCCESS_URL } from "../../constants";
 import { CreditsPriceProvider } from "../../CreditsPriceProvider";
+
+
 export async function GET(request: Request, { params }: { params: { priceId: string } }) {
 
     const session = await getSession() as Session;
@@ -22,8 +24,8 @@ export async function GET(request: Request, { params }: { params: { priceId: str
                 quantity: 1,
             },
         ],
-        success_url: "http://localhost:3000",
-        cancel_url: "http://localhost:3000"
+        success_url: STRIPE_SUCCESS_URL,
+        cancel_url: STRIPE_CANCEL_URL
     })
 
     const usersRepository = new DDBUsersRepository()

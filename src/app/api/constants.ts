@@ -19,3 +19,6 @@ export const OPENAI_API_KEY = process.env.OPENAI_API_KEY || ""
 export const FREE_CREDITS_CENTS = 500
 const stripeKey = process.env.STRIPE_SECRET_KEY || ""
 export const STRIPE = new Stripe(stripeKey)
+
+export const STRIPE_SUCCESS_URL = process.env.STRIPE_SUCCESS_URL || "http://localhost:3000"
+export const STRIPE_CANCEL_URL = process.env.STRIPE_CANCEL_URL || "http://localhost:3000"
