@@ -1,4 +1,4 @@
-import { PriceProvider } from "../PriceProvider";
+import { PriceProvider } from "../TextGeneratorPriceProvider";
 import { UsersRepository } from "../repositories/users";
 
 export interface TextGenerationOutput {

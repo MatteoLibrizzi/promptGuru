@@ -2,7 +2,6 @@
 import { classNames } from "@/app/utils";
 import { HomeIcon, UsersIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
-import { useQuery } from "react-query";
 import { UserUsage } from "../components/userUsage";
 
 // TODO use this
@@ -11,7 +10,7 @@ const UserPage = ({ params }: { params: { id: string } }) => {
 
   const navigation = [
     { name: "Usage", href: "#", icon: HomeIcon },
-    { name: "Created Prompts", href: "#", icon: UsersIcon },// TODO create api and repo method to get the prompts by user
+    { name: "Created Prompts", href: "#", icon: UsersIcon }, // TODO create api and repo method to get the prompts by user
   ];
 
   return (
@@ -73,7 +72,6 @@ const UserPage = ({ params }: { params: { id: string } }) => {
             {/* Start right column area */}
             <div className="relative h-full" style={{ minHeight: "16rem" }}>
               {/* <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" /> */}
-              <button>Buy credits</button>
             </div>
             {/* End right column area */}
           </div>

@@ -86,7 +86,6 @@ export class DDBPromptsRepository extends PromptsRepository {
                 if (!categoryItem.promptId?.S) {
                     throw new Error("Could not find id in prompt")
                 }
-                console.log("Getting prompt by id: ", categoryItem.promptId.S)
                 const prompt = await this.getPromptById(categoryItem.promptId.S)
 
                 return prompt

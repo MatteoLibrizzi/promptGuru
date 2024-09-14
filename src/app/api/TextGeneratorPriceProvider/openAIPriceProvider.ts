@@ -1,4 +1,4 @@
-import { PriceProvider } from "@/app/api/PriceProvider"
+import { PriceProvider } from "@/app/api/TextGeneratorPriceProvider"
 
 export class OpenAIPriceProvider extends PriceProvider {
     pricePerInputToken = 0.000075 / 1000

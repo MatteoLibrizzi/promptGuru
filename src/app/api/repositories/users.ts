@@ -1,5 +1,6 @@
-import { GetItemCommand, PutItemCommand, PutItemCommandInput, QueryCommand, QueryCommandInput } from "@aws-sdk/client-dynamodb"
-import { DDB_CLIENT, DDB_USERS_TABLE_NAME, FREE_CREDITS_CENTS } from "@/app/api/constants"
+import { GetItemCommand, PutItemCommand, PutItemCommandInput, QueryCommand, QueryCommandInput, UpdateItemCommand } from "@aws-sdk/client-dynamodb"
+import { DDB_CHECKOUT_SESSION_TABLE_NAME, DDB_CLIENT, DDB_USERS_TABLE_NAME, FREE_CREDITS_CENTS } from "@/app/api/constants"
+import { unmarshall } from "@aws-sdk/util-dynamodb";// TODO maybe use marshal instead of ddb parser
 
 
 export interface Transaction {
@@ -16,6 +17,9 @@ export abstract class UsersRepository {
     abstract getUserBalance: (userId: string) => Promise<number>
     abstract getUserTransactions: (userId: string) => Promise<Transaction[]>
     abstract addTransaction: (userId: string, transaction: Transaction) => Promise<void>
+    abstract createCheckoutSession: (userId: string, checkoutSessionId: string, priceId: string) => Promise<void>
+    abstract getCheckoutSessionById: (checkoutSessionId: string) => Promise<CheckoutSession>
+    abstract confirmPaymentForCheckoutSession: (checkoutSessionId: string, checkoutTimestamp: number) => Promise<void>
 }
 
 
@@ -25,6 +29,12 @@ export interface UserInput {
 }
 
 export class MockUsersRepository extends UsersRepository {
+    createCheckoutSession: (userId: string, checkoutSessionId: string, priceId: string) => Promise<void> =
+        async () => { }
+    getCheckoutSessionById: (checkoutSessionId: string) => Promise<CheckoutSession> =
+        async () => ({ userId: "", checkoutTimestamp: 0, checkoutSessionId: "", priceId: "" })
+    confirmPaymentForCheckoutSession: (checkoutSessionId: string, checkoutTimestamp: number) => Promise<void>
+        = async () => { }
     addTransaction: (userId: string, transaction: Transaction) => Promise<void> = async () => { }
     getUserBalance: (userId: string) => Promise<number> = async () => 1
     getUserTransactions: (userId: string) => Promise<Transaction[]> = async () => []
@@ -33,14 +43,100 @@ export class MockUsersRepository extends UsersRepository {
     createUserIfNotExistent = async (userId: UserId) => { }
 }
 
-enum DataType {
+enum UserTableDataType {
     METADATA = "METADATA",
     TRANSACTION = "TRANSACTION",
 };
 
+enum CheckoutSessionStatus {
+    PENDING = "PENDING",
+    COMPLETED = "COMPLETED",
+}
+
+export interface CheckoutSession {
+    userId: UserId
+    checkoutTimestamp: number
+    checkoutSessionId: string
+    priceId: string
+}
+
 export class DDBUsersRepository extends UsersRepository {
+    createCheckoutSession: (userId: string, checkoutSessionId: string, priceId: string) => Promise<void> = async (userId: string, checkoutSessionId, priceId) => {
+        const params = {
+            TableName: DDB_CHECKOUT_SESSION_TABLE_NAME,
+            Item: {
+                sessionId: { S: checkoutSessionId },
+                checkoutTimestamp: { N: Date.now().toString() },
+                status: { S: CheckoutSessionStatus.PENDING },
+                userId: { S: userId },
+                priceId: { S: priceId }
+            },
+        };
+
+        const command = new PutItemCommand(params);
+
+        try {
+            await DDB_CLIENT.send(command);
+        } catch (err) {
+            console.error("Error creating checkout session:", err);
+            throw err;
+        }
+    }
+    getCheckoutSessionById: (checkoutSessionId: string) => Promise<CheckoutSession> = async (checkoutSessionId: string) => {
+        const params = {
+            TableName: DDB_CHECKOUT_SESSION_TABLE_NAME,
+            KeyConditionExpression: "sessionId = :csid",
+            ExpressionAttributeValues: {
+                ":csid": { S: checkoutSessionId }
+            },
+            ScanIndexForward: false,
+            Limit: 1,
+        };
+
+        const command = new QueryCommand(params);
+
+        try {
+            const data = await DDB_CLIENT.send(command);
+
+            if (!data.Items || data.Items.length === 0) {
+                throw new Error("Checkout session not found");
+            }
+
+            const item = unmarshall(data.Items[0]);
+
+            return item as CheckoutSession
+        } catch (err) {
+            console.error("Error getting latest checkout session:", err);
+            throw err;
+        }
+    }
+    confirmPaymentForCheckoutSession: (checkoutSessionId: string, checkoutTimestamp: number) => Promise<void> = async (checkoutSessionId, checkoutTimestamp) => {
+        const params = {
+            TableName: DDB_CHECKOUT_SESSION_TABLE_NAME,
+            Key: {
+                sessionId: { S: checkoutSessionId },
+                checkoutTimestamp: { N: checkoutTimestamp.toString() }
+            },
+            UpdateExpression: "SET #status = :completed",
+            ExpressionAttributeNames: {
+                "#status": "status"
+            },
+            ExpressionAttributeValues: {
+                ":completed": { S: CheckoutSessionStatus.COMPLETED }
+            },
+        };
+
+        const command = new UpdateItemCommand(params);
+
+        try {
+            await DDB_CLIENT.send(command);
+        } catch (err) {
+            console.error("Error confirming payment for checkout session:", err);
+            throw err;
+        }
+    }
     addTransaction = async (userId: string, transaction: Transaction): Promise<void> => {
-        const dataType = `${DataType.TRANSACTION}#${transaction.transactionTimestamp}`;
+        const dataType = `${UserTableDataType.TRANSACTION}#${transaction.transactionTimestamp}`;
 
         const currentBalance = await this.getUserBalance(userId);
 
@@ -73,7 +169,7 @@ export class DDBUsersRepository extends UsersRepository {
             KeyConditionExpression: "userId = :userId AND begins_with(dataType, :dataTypePrefix)",
             ExpressionAttributeValues: {
                 ":userId": { S: userId },
-                ":dataTypePrefix": { S: `${DataType.TRANSACTION}#` },
+                ":dataTypePrefix": { S: `${UserTableDataType.TRANSACTION}#` },
             },
             ScanIndexForward: false,
             Limit: 1,
@@ -106,7 +202,7 @@ export class DDBUsersRepository extends UsersRepository {
             KeyConditionExpression: "userId = :userId AND begins_with(dataType, :dataTypePrefix)",
             ExpressionAttributeValues: {
                 ":userId": { S: userId },
-                ":dataTypePrefix": { S: `${DataType.TRANSACTION}#` },
+                ":dataTypePrefix": { S: `${UserTableDataType.TRANSACTION}#` },
             },
             ScanIndexForward: false,
             ProjectionExpression: "amount, transactionTimestamp, description",
@@ -148,7 +244,7 @@ export class DDBUsersRepository extends UsersRepository {
             TableName: DDB_USERS_TABLE_NAME,
             Key: {
                 userId: { S: userId },
-                dataType: { S: `${DataType.METADATA}` }
+                dataType: { S: `${UserTableDataType.METADATA}` }
             },
         };
         const getItemCommand = new GetItemCommand(commandProps);
@@ -172,7 +268,7 @@ export class DDBUsersRepository extends UsersRepository {
             TableName: DDB_USERS_TABLE_NAME,
             Item: {
                 userId: { S: userInput.userId },
-                'dataType': { S: `${DataType.METADATA}` }
+                'dataType': { S: `${UserTableDataType.METADATA}` }
             },
         };
 

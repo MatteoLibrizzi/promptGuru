@@ -80,6 +80,21 @@ export class PromptGuruStack extends cdk.Stack {
 		return users
 	}
 
+	createCheckoutSessionsDDBTable = () => {
+		const checkoutSessions = new dynamodb.Table(
+			this,
+			"CheckoutSessions",
+			{
+				partitionKey: { name: "sessionId", type: dynamodb.AttributeType.STRING },
+				sortKey: { name: "checkoutTimestamp", type: dynamodb.AttributeType.NUMBER },
+				billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+				removalPolicy: cdk.RemovalPolicy.RETAIN,
+			}
+		)
+
+		return checkoutSessions
+	}
+
 
 	// TODO setup IAM user with limited access to assign to vercel
 
@@ -91,5 +106,6 @@ export class PromptGuruStack extends cdk.Stack {
 		const promptsDDBTable = this.createPromptsDDBTable()
 		const userCreditsDDBTable = this.createUsersDDBTable()
 		const promptCategoriesDDBTable = this.createPromptCategoriesDDBTable()
+		const checkoutSessionsDDBTable = this.createCheckoutSessionsDDBTable()
 	}
 }

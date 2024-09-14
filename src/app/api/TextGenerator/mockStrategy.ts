@@ -1,6 +1,6 @@
-import { PriceProvider } from '../PriceProvider';
-import { MockUsersRepository, UsersRepository } from '../repositories/users';
-import { TextGenerationOutput, TextGenerationStrategy } from './strategy';
+import { PriceProvider } from '../TextGeneratorPriceProvider';
+import { UsersRepository } from '../repositories/users';
+import { TextGenerationStrategy } from './strategy';
 
 export class MockStrategy extends TextGenerationStrategy {
     private stringToReturn: string;

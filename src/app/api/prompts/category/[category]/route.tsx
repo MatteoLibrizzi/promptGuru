@@ -5,7 +5,6 @@ export async function GET(
   { params }: { params: { category: string } }
 ) {
   const promptsRepository = new DDBPromptsRepository();
-  console.log(params.category);
 
   const prompts = await promptsRepository.getPromptsByCategory(params.category);
 

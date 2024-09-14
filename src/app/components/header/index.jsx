@@ -6,6 +6,7 @@ import { classNames } from "@/app/utils";
 import { UserMenuDropdown } from "@/app/components/header/UserMenuDropdown";
 import { useQuery } from "react-query";
 import { useAuthOnPage } from "@/app/hooks/useAuthOnPage";
+import { BuyCreditsDropdown } from "./BuyCreditsDropdown";
 
 export default function Header() {
   useAuthOnPage();
@@ -22,7 +23,7 @@ export default function Header() {
       if (!res.ok) {
         throw new Error("Prompt not found");
       }
-      
+
       return await res.json();
     },
     queryKey: ["getAllSubcategories"],
@@ -248,6 +249,7 @@ export default function Header() {
                     </a>
                   </div>
                   {/* Profile dropdown */}
+                  <BuyCreditsDropdown />
                   <UserMenuDropdown />
                 </div>
               </div>

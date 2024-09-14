@@ -1,8 +1,8 @@
 import OpenAI from 'openai';
-import { TextGenerationOutput, TextGenerationStrategy } from './strategy';
-import { PriceProvider } from '../PriceProvider';
-import { OpenAIPriceProvider } from '../PriceProvider/openAIPriceProvider';
-import { DDBUsersRepository, UsersRepository } from '../repositories/users';
+import { TextGenerationStrategy } from './strategy';
+import { PriceProvider } from '../TextGeneratorPriceProvider';
+import { OpenAIPriceProvider } from '../TextGeneratorPriceProvider/openAIPriceProvider';
+import { UsersRepository } from '../repositories/users';
 
 export class OpenAIStrategy extends TextGenerationStrategy {
     private openai: OpenAI;
