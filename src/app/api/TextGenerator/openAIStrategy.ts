@@ -17,7 +17,14 @@ export class OpenAIStrategy extends TextGenerationStrategy {
     }
 
 
-    generate = async (input: string) => {
+    generate = async (input: string, userId: string, promptId: string) => {
+        const inputTokensCount = input.length
+        const priceInput = this.priceProvider.getPriceForInputTokens(inputTokensCount)
+        if (priceInput > await this.usersRepository.getUserBalance(userId)) {
+            throw new Error("Not enough credits")
+        }
+
+
         const response = await this.openai.chat.completions.create({
             model: "gpt-4o-mini-2024-07-18",
             messages: [
@@ -26,11 +33,26 @@ export class OpenAIStrategy extends TextGenerationStrategy {
         });
 
         const openAiGeneratedContent = response.choices[0]?.message?.content
+
         if (!openAiGeneratedContent) {
             throw new Error("No valid response from OpenAI")
         }
+
+
+        const outputTokensCount = openAiGeneratedContent.length
+        const priceOutput = this.priceProvider.getPriceForOutputTokens(outputTokensCount)
+
+        const totalPrice = priceInput + priceOutput
+
+        this.usersRepository.addTransaction(userId, {
+            promptId,
+            transactionTimestamp: Date.now(),
+            amount: -totalPrice,
+            description: "Text Generation"
+        })
+
         const escapedReturnValue = openAiGeneratedContent.replace(/\n/g, "\n");
 
-        return { output: escapedReturnValue, price: 0 }
+        return { output: escapedReturnValue, price: totalPrice }
     }
 }
