@@ -1,5 +1,10 @@
 "use client";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  PhoneXMarkIcon,
+  XMarkIcon,
+  PhoneIcon,
+} from "@heroicons/react/24/outline";
 import { Dialog, Popover, Tab, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { classNames } from "@/app/utils";
@@ -34,11 +39,15 @@ export default function Header() {
           {/* Logo section */}
           <div className="flex items-center px-2 lg:px-0 xl:w-64">
             <div className="flex-shrink-0">
-              <img
-                className="h-8 w-auto"
-                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=300"
+              <a
+                href="/"
+                className="flex flex-col justify-center items-center"
+                src={PhoneIcon}
                 alt="Your Company"
-              />
+              >
+                <PhoneIcon className="h-8 w-8 text-white" aria-hidden="true" />
+                <h1 className="text-xs pt-1 text-white">ProntoPrompt</h1>
+              </a>
             </div>
           </div>
 

@@ -22,3 +22,4 @@ export const STRIPE = new Stripe(stripeKey)
 
 export const STRIPE_SUCCESS_URL = process.env.STRIPE_SUCCESS_URL || "http://localhost:3000"
 export const STRIPE_CANCEL_URL = process.env.STRIPE_CANCEL_URL || "http://localhost:3000"
+export const STRIPE_ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET || ""
