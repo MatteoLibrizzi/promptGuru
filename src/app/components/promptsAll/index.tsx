@@ -3,6 +3,13 @@
 import { useQuery } from "react-query";
 import PromptBox from "@/app/components/promptDisplay";
 
+const images = [
+  "https://iili.io/drWKteI.md.jpg",
+  "https://iili.io/drWo4st.th.png",
+  "https://iili.io/drWnCyQ.th.jpg",
+  "https://iili.io/drWzOAv.th.jpg",
+];
+
 export const PopularPrompts = () => {
   const { data, isLoading, isError } = useQuery({
     queryFn: async () => {
@@ -22,14 +29,15 @@ export const PopularPrompts = () => {
       {!isLoading &&
         !isError &&
         data?.prompts?.length &&
-        data.prompts.map((prompt: any) => {
+        data.prompts.map((prompt: any, idx: number) => {
           return (
             <PromptBox
-              img={"https://iili.io/dwpImsj.md.png"}
+              img={images[idx % 4]}
               id={prompt.id}
               title={prompt.title}
               key={prompt.title}
               description={prompt.description}
+              categories={prompt.categories}
             />
           );
         })}

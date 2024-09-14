@@ -1,9 +1,10 @@
 "use client";
-import { classNames } from "@/app/utils";
+import { classNames, formatNumber } from "@/app/utils";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { Menu, Transition } from "@headlessui/react";
 import { useRouter } from "next/navigation";
 import { Fragment } from "react";
+import { useQuery } from "react-query";
 
 const prices = [
   {
@@ -36,6 +37,21 @@ export const BuyCreditsDropdown = () => {
   const { user, error, isLoading } = useUser();
   const router = useRouter();
 
+  const {
+    data: balanceData,
+    isLoading: balanceLoading,
+    error: balanceError,
+  } = useQuery({
+    queryFn: async () => {
+      const res = await fetch(`/api/userBalance`);
+      if (!res.ok) {
+        throw new Error("Failed to fetch data");
+      }
+      return res.json();
+    },
+    queryKey: ["userBalance"],
+  });
+
   const handleBuyClick = async (priceId: string) => {
     const res = await fetch(`/api/buyCredits/${priceId}`, {});
 
@@ -52,17 +68,22 @@ export const BuyCreditsDropdown = () => {
         <a
           href="/api/auth/login"
           className={
-            "rounded-md px-3 py-2 text-sm font-medium text-indigo-200 hover:text-white"
+            "rounded-md px-3 py-2 text-sm font-bold text-indigo-200 hover:text-white"
           }
         >
-          Buy Credits
+          💰 Buy Credits 💰
         </a>
       )}
       {user && (
         <Menu as="div" className="relative ml-4 flex-shrink-0">
           <div>
-            <Menu.Button className="flex  text-sm rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-700">
-              <h1 className="">Buy Credits</h1>
+            <Menu.Button className="flex flex-col items-center rounded-lg text-white hover:text-indigo-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-700">
+              <h1 className="text-sm font-bold">💰 Buy Credits 💰</h1>
+              {balanceData && (
+                <h2 className="text-xs">
+                  {formatNumber(balanceData?.balance)} Credits
+                </h2>
+              )}
             </Menu.Button>
           </div>
           <Transition
@@ -87,8 +108,8 @@ export const BuyCreditsDropdown = () => {
                         "block w-full px-4 py-2 text-sm text-gray-700"
                       )}
                     >
-                      {price.credits} credits for {price.amount} -&rarr;{" "}
-                      ~{price.avgUsages} Usages
+                      <strong>{price.credits}</strong> credits for{" "}
+                      {price.amount} -&rarr; ~{price.avgUsages} Usages
                     </button>
                   )}
                 </Menu.Item>

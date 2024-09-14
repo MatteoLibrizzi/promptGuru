@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-const PromptBox = ({ title, id, description, img }: any) => {
+const PromptBox = ({ title, id, description, img, categories }: any) => {
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white">
       <div className="aspect-square bg-gray-200 group-hover:opacity-75 sm:aspect-none ">
@@ -20,6 +20,14 @@ const PromptBox = ({ title, id, description, img }: any) => {
           </a>
         </h3>
         <p className="text-sm text-gray-500">{description}</p>
+        <div className="flex flex-wrap gap-2">
+          {categories &&
+            categories.map((category: string) => (
+              <p className="text-xs text-gray-500 rounded-xl p-1 border border-gray-900">
+                {category}
+              </p>
+            ))}
+        </div>
       </div>
     </div>
   );

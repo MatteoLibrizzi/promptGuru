@@ -9,7 +9,7 @@ const FormLine = ({ label, input, parentClassname }: any) => {
   return (
     <div
       className={
-        "sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 " + parentClassname
+        "flex flex-row justify-between items-center mt-2" + parentClassname
       }
     >
       <label
@@ -44,6 +44,7 @@ export default function PromptForm() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
+  const [customCategory, setCustomCategory] = useState<string>("");
 
   const addCategory = (category: string) => {
     const copy = [...categories];
@@ -112,34 +113,30 @@ export default function PromptForm() {
             <FormLine
               label={"Title"}
               input={
-                <div className="mt-1 sm:col-span-2 sm:mt-0">
-                  <div className="flex max-w-lg rounded-md shadow-sm">
-                    <input
-                      type="text"
-                      name="title"
-                      id="title"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
+                <div className="border-indigo-400 border mt-1 sm:col-span-2 sm:mt-0 flex max-w-lg rounded-md shadow-sm">
+                  <input
+                    type="text"
+                    name="title"
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  />
                 </div>
               }
             />
             <FormLine
               label={"Description"}
               input={
-                <div className="mt-1 sm:col-span-2 sm:mt-0">
-                  <div className="flex max-w-lg rounded-md shadow-sm">
-                    <input
-                      type="text"
-                      name="description"
-                      id="description"
-                      onChange={(e) => setDescription(e.target.value)}
-                      value={description}
-                      className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
+                <div className="border-indigo-400 border mt-1 sm:col-span-2 sm:mt-0 flex max-w-lg rounded-md shadow-sm">
+                  <input
+                    type="text"
+                    name="description"
+                    id="description"
+                    onChange={(e) => setDescription(e.target.value)}
+                    value={description}
+                    className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  />
                 </div>
               }
             />
@@ -254,6 +251,56 @@ export default function PromptForm() {
                             </Disclosure>
                           </div>
                         ))}
+                      <div className="ml-16">
+                        <Disclosure as="div" className="pt-2 border-gray-200">
+                          {({ open }) => (
+                            <>
+                              <Disclosure.Button className="flex w-80 items-center justify-between bg-white py-3 text-sm text-gray-400">
+                                <h1 className="font-bold italic text-medium text-gray-900">
+                                  Custom Category
+                                </h1>
+                                <span className="ml-6 flex items-center">
+                                  <ChevronDownIcon
+                                    className={classNames(
+                                      open ? "-rotate-180" : "rotate-0",
+                                      "h-5 w-5 transform"
+                                    )}
+                                    aria-hidden="true"
+                                  />
+                                </span>
+                              </Disclosure.Button>
+                              <Disclosure.Panel className="pt-2">
+                                <FormLine
+                                  label={`Add Custom Category: `}
+                                  input={
+                                    <div className=" mt-1 sm:col-span-2 sm:mt-0 flex max-w-lg rounded-md shadow-sm">
+                                      <input
+                                        type="text"
+                                        name={`custom-category`}
+                                        id={`custom-category`}
+                                        value={customCategory}
+                                        onChange={(e) => {
+                                          setCustomCategory(e.target.value);
+                                        }}
+                                        className="border-indigo-400 border block w-full max-w-lg rounded-md  shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:max-w-xs sm:text-sm"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          addCategory(customCategory)
+                                        }
+                                        className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                      >
+                                        Add Category
+                                      </button>
+                                    </div>
+                                  }
+                                />
+                              </Disclosure.Panel>
+                            </>
+                          )}
+                        </Disclosure>
+                      </div>
                     </div>
                   </Disclosure.Panel>
                 </>
@@ -277,12 +324,12 @@ export default function PromptForm() {
 
           <div className="space-y-6 sm:space-y-5">
             {promptFields.map((field, index) => (
-              <div key={index}>
+              <div key={index} className="">
                 <FormLine
                   label={"Text"}
                   parentClassname={"sm:border-t sm:border-gray-200 sm:pt-5"}
                   input={
-                    <div className="mt-1 sm:col-span-2 sm:mt-0">
+                    <div className="border-indigo-400 border mt-1 sm:col-span-2 sm:mt-0 flex max-w-lg rounded-md shadow-sm">
                       <input
                         type="text"
                         name={`prompt-text-${index}`}
@@ -301,7 +348,7 @@ export default function PromptForm() {
                 <FormLine
                   label={`User Field Name ${index + 1}`}
                   input={
-                    <div className="mt-1 sm:col-span-2 sm:mt-0">
+                    <div className="border-indigo-400 border mt-1 sm:col-span-2 sm:mt-0 flex max-w-lg rounded-md shadow-sm">
                       <input
                         type="text"
                         name={`user-field-name-${index}`}
@@ -320,7 +367,7 @@ export default function PromptForm() {
                 <FormLine
                   label={`User Field Description ${index + 1}`}
                   input={
-                    <div className="mt-1 sm:col-span-2 sm:mt-0">
+                    <div className="border-indigo-400 border mt-1 sm:col-span-2 sm:mt-0 flex max-w-lg rounded-md shadow-sm">
                       <input
                         type="text"
                         name={`user-field-description-${index}`}
@@ -354,7 +401,7 @@ export default function PromptForm() {
               label={"Text"}
               parentClassname={"sm:border-t sm:border-gray-200 sm:pt-5"}
               input={
-                <div className="mt-1 sm:col-span-2 sm:mt-0">
+                <div className="border-indigo-400 border mt-1 sm:col-span-2 sm:mt-0 flex max-w-lg rounded-md shadow-sm">
                   <input
                     type="text"
                     name="prompt-text-last"

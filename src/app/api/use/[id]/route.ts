@@ -4,6 +4,8 @@ import { TextGenerator } from "@/app/api/TextGenerator/TextGenerator";
 import { MockStrategy } from "@/app/api/TextGenerator/mockStrategy";
 import { DDBPromptsRepository } from "@/app/api/repositories/prompts";
 import { DDBUsersRepository } from "../../repositories/users";
+import { OpenAIStrategy } from "../../TextGenerator/openAIStrategy";
+import { OPENAI_API_KEY } from "../../constants";
 
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
@@ -25,7 +27,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
         return Response.json({ error: "Prompt not found" }, { status: 404 })
     }
 
-    const strategy = new MockStrategy("will be returned", usersRepository) // new OpenAIStrategy(OPENAI_API_KEY)/
+    const strategy = new OpenAIStrategy(OPENAI_API_KEY, usersRepository)
     const textGenerator = new TextGenerator(strategy)
 
     const userTextObject = await request.json()

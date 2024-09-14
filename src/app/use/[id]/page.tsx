@@ -1,6 +1,10 @@
+"use client";
+import { useAuthOnPage } from "@/app/hooks/useAuthOnPage";
+
 import UsePromptMainSection from "@/app/use/[id]/UsePromptMainSection";
 
 export default function Use({ params }: any) {
+  useAuthOnPage();
   return (
     <>
       {/* Background color split screen for large screens */}

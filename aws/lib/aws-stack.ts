@@ -95,6 +95,25 @@ export class PromptGuruStack extends cdk.Stack {
 		return checkoutSessions
 	}
 
+	createPromptImagesBucket = () => {
+		const promptImagesBucket = new s3.Bucket(
+			this,
+			"PromptImages",
+			{
+
+			}
+		)
+		// promptImagesBucket.addToResourcePolicy(
+		// 	new iam.PolicyStatement({
+		// 		actions: ['s3:GetObject'],
+		// 		resources: [`${promptImagesBucket.bucketArn}/*`],
+		// 		principals: [new iam.AnyPrincipal()],
+		// 		effect: iam.Effect.ALLOW,
+		// 	})
+		// );
+		return promptImagesBucket
+	}
+
 
 	// TODO setup IAM user with limited access to assign to vercel
 
@@ -107,5 +126,6 @@ export class PromptGuruStack extends cdk.Stack {
 		const userCreditsDDBTable = this.createUsersDDBTable()
 		const promptCategoriesDDBTable = this.createPromptCategoriesDDBTable()
 		const checkoutSessionsDDBTable = this.createCheckoutSessionsDDBTable()
+		// const promptImagesBucket = this.createPromptImagesBucket()
 	}
 }

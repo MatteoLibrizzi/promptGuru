@@ -1,5 +1,8 @@
+"use client";
 import PromptForm from "@/app/components/promptForm";
+import { useAuthOnPage } from "../hooks/useAuthOnPage";
 export default function Add() {
+  useAuthOnPage();
   return (
     <>
       {/* Background color split screen for large screens */}
