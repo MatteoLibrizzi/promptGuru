@@ -5,6 +5,7 @@ import FormLine from "../dataDisplayLine";
 import { Disclosure } from "@headlessui/react";
 import { classNames } from "@/app/utils";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { Loader } from "../loader";
 
 export const UserUsage = () => {
   const {
@@ -49,7 +50,7 @@ export const UserUsage = () => {
           }
         />
       )}
-      {balanceLoading && <p>Loading...</p>}
+      {balanceLoading && <Loader />}
 
       <Disclosure as="div" className="pt-4 border-gray-200">
         {({ open }) => (
@@ -79,7 +80,7 @@ export const UserUsage = () => {
                     value={transaction.amount}
                   />
                 ))}
-              {transactionsLoading && <p>Loading...</p>}
+              {transactionsLoading && <Loader />}
             </Disclosure.Panel>
           </>
         )}

@@ -2,6 +2,7 @@
 
 import { useQuery } from "react-query";
 import PromptBox from "@/app/components/promptDisplay";
+import { Loader } from "../loader";
 
 const images = [
   "https://iili.io/drWKteI.md.jpg",
@@ -41,7 +42,7 @@ export const PopularPrompts = () => {
             />
           );
         })}
-      {isLoading && <h1>Loading...</h1>}
+      {isLoading && <Loader />}
       {isError && <h1>Couldnt load prompts</h1>}
     </div>
   );

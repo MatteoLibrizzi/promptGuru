@@ -4,6 +4,7 @@ import FormLine from "@/app/components/dataDisplayLine";
 import { useEffect, useState } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useRouter } from "next/navigation";
+import { Loader } from "@/app/components/loader";
 
 export default function UsePromptMainSection({ id }: any) {
   const {
@@ -69,7 +70,7 @@ export default function UsePromptMainSection({ id }: any) {
   return (
     <>
       <div className="mb-8">
-        {promptIsLoading && <h1>Loading...</h1>}
+        {promptIsLoading && <Loader />}
         {promptIsError && <h1>Error Loading the Prompt</h1>}
         {!promptIsLoading && !promptIsError && (
           <div className="space-y-8 divide-y divide-gray-200">
@@ -135,7 +136,7 @@ export default function UsePromptMainSection({ id }: any) {
         generatedString && (
           <h1 className="text-s whitespace-pre-wrap	">{generatedString}</h1>
         )}
-      {generatedResponseIsLoading && <h1>Loading...</h1>}
+      {generatedResponseIsLoading && <Loader />}
       {generatedResponseIsError && <h1>Error</h1>}
     </>
   );

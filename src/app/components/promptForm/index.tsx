@@ -4,6 +4,7 @@ import { Disclosure } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useQuery } from "react-query";
+import { Loader } from "../loader";
 
 const FormLine = ({ label, input, parentClassname }: any) => {
   return (
@@ -45,6 +46,7 @@ export default function PromptForm() {
   const [description, setDescription] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
   const [customCategory, setCustomCategory] = useState<string>("");
+  const [creationStatus, setCreationStatus] = useState("NOT_CLICKED");
 
   const addCategory = (category: string) => {
     const copy = [...categories];
@@ -64,6 +66,7 @@ export default function PromptForm() {
   };
 
   const submit = async () => {
+    setCreationStatus("PENDING");
     const promptTexts = promptFields.map((userField) => userField.promptBefore);
     promptTexts.push(lastPrompt);
 
@@ -84,7 +87,19 @@ export default function PromptForm() {
       }),
       method: "POST",
     });
+
+    if (res.ok) {
+      setCreationStatus("SUCCESS");
+    } else {
+      setCreationStatus("ERROR");
+    }
   };
+
+  if (creationStatus === "SUCCESS") {
+    setTimeout(() => {
+      setCreationStatus("NOT_CLICKED");
+    }, 10000);
+  }
 
   const removeUserField = (index: number) => {
     const newFields = [...promptFields];
@@ -141,7 +156,7 @@ export default function PromptForm() {
               }
             />
 
-            <FormLine
+            {/* <FormLine
               label={"Picture"}
               // TODO integrate with cloudinary https://console.cloudinary.com/pm/c-63cae420540f4e9e453e056f3304e1/media-explorer
               input={
@@ -165,7 +180,7 @@ export default function PromptForm() {
                   </div>
                 </div>
               }
-            />
+            /> */}
 
             <Disclosure as="div" className="pt-4 border-gray-200">
               {({ open }) => (
@@ -428,19 +443,26 @@ export default function PromptForm() {
 
       <div className="pt-5">
         <div className="flex justify-end">
-          <button
-            type="button"
-            className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={submit}
-            className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            Save
-          </button>
+          {creationStatus === "NOT_CLICKED" && (
+            <button
+              type="button"
+              onClick={submit}
+              className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              Add
+            </button>
+          )}
+          {creationStatus === "PENDING" && <Loader />}
+          {creationStatus === "SUCCESS" && (
+            <p className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+              Added ✅
+            </p>
+          )}
+          {creationStatus === "ERROR" && (
+            <p className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-red-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+              Error ❌
+            </p>
+          )}
         </div>
       </div>
     </form>
