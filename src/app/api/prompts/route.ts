@@ -1,6 +1,7 @@
 import { DDBPromptsRepository } from "@/app/api/repositories/prompts"
 
 
+export const dynamic = 'force-dynamic'
 export async function GET(request: Request) {
 
     const promptsRepository = new DDBPromptsRepository()
