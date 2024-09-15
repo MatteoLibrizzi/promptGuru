@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     try {
         event = STRIPE.webhooks.constructEvent(text, stripeSignature, STRIPE_ENDPOINT_SECRET);
     } catch (err) {
-        // console.error("Error during event creation: ", err)
+        console.error("Error during event creation: ", err)
         return Response.json({ error: JSON.stringify(err) }, { status: 400 })
     }
 
