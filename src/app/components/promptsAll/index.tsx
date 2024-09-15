@@ -28,7 +28,7 @@ export const PopularPrompts = () => {
     <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8">
       {!isLoading &&
         !isError &&
-        data?.prompts?.length &&
+        data?.prompts &&
         data.prompts.map((prompt: any, idx: number) => {
           return (
             <PromptBox
@@ -42,6 +42,7 @@ export const PopularPrompts = () => {
           );
         })}
       {isLoading && <h1>Loading...</h1>}
+      {isError && <h1>Couldnt load prompts</h1>}
     </div>
   );
 };
