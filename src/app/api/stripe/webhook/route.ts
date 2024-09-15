@@ -2,18 +2,18 @@ import { STRIPE, STRIPE_ENDPOINT_SECRET } from "../../constants";
 import { CreditsPriceProvider } from "../../CreditsPriceProvider";
 import { DDBUsersRepository } from "../../repositories/users";
 
-
 export async function POST(request: Request) {
-    const sig = request.headers.get('stripe-signature') || "";
+    const text = await request.text();
+    const headersList = request.headers
+    const stripeSignature = headersList.get("Stripe-Signature")!;
+    console.log(stripeSignature, text, STRIPE_ENDPOINT_SECRET);
 
     let event;
 
-    const body = await request.text()
-
     try {
-        event = STRIPE.webhooks.constructEvent(body, sig, STRIPE_ENDPOINT_SECRET);
+        event = STRIPE.webhooks.constructEvent(text, stripeSignature, STRIPE_ENDPOINT_SECRET);
     } catch (err) {
-        console.error("Error during event creation: ", err)
+        // console.error("Error during event creation: ", err)
         return Response.json({ error: JSON.stringify(err) }, { status: 400 })
     }
 
