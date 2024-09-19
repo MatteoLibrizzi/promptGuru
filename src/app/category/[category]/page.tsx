@@ -17,7 +17,7 @@ export default function Category({ params }: any) {
               <div className="h-full py-6 pl-4 pr-6 sm:pl-6 lg:pl-8 xl:pl-0">
                 {/* Start left column area */}
                 <div className="relative h-full" style={{ minHeight: "12rem" }}>
-                  <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" />
+                  <h1>Use prompts from other users, pay based on usage.</h1>
                 </div>
 
                 {/* End left column area */}
@@ -42,7 +42,7 @@ export default function Category({ params }: any) {
             <div className="h-full py-6 pl-6 lg:w-80">
               {/* Start right column area */}
               <div className="relative h-full" style={{ minHeight: "16rem" }}>
-                <div className="absolute inset-0 rounded-lg border-2 border-dashed border-gray-200" />
+                <h1>Create your own prompts and get paid based on usage.</h1>
               </div>
               {/* End right column area */}
             </div>
