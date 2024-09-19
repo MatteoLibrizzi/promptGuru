@@ -153,9 +153,13 @@ export default function Add() {
                           </h3>
                           <p className="mt-1 max-w-2xl text-sm text-gray-500">
                             This Prompt will be available to use to the public,
-                            you will be paid based on its usage following this
-                            guidelines.
+                            you will be paid based on its usage.
                             {/* TODO provide link to pdf with explanation */}
+                          </p>
+                          <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                            After removing api costs you will earn{" "}
+                            <strong>90%</strong> of the profits, the rest will
+                            be used for infrastructure costs.
                           </p>
                         </div>
 
