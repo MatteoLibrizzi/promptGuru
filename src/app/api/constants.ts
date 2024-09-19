@@ -10,6 +10,9 @@ export const DDB_CLIENT = new DynamoDBClient({
 export const S3_CLIENT = new S3Client({
     region: 'eu-west-1'
 });
+
+export const APP_URL = process.env.APP_URL = ""
+
 export const DDB_PROMPTS_TABLE_NAME = process.env.DDB_PROMPTS_TABLE_NAME || ''
 export const DDB_PROMPTS_CATEGORIES_TABLE_NAME = process.env.DDB_PROMPTS_CATEGORIES_TABLE_NAME || ''
 export const DDB_USERS_TABLE_NAME = process.env.DDB_USERS_TABLE_NAME || ''
