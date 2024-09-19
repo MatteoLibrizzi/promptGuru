@@ -202,7 +202,7 @@ export default function Add() {
                               <>
                                 <Disclosure.Button className="flex w-full items-center justify-between bg-white px-2 py-3 text-sm text-gray-400">
                                   <h1 className="font-bold text-lg text-gray-900">
-                                    Categories
+                                    Add Categories ➕
                                   </h1>
                                   <div className="grid grid-cols-4 gap-6">
                                     {categories.map((category, idx) => (
