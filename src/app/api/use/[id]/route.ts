@@ -33,7 +33,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const userTextObject = await request.json()
     const userText = Object.keys(userTextObject).map(k => userTextObject[k])
 
-    const textGenerationOutput = await textGenerator.generate(prompt.getFilledPrompt(userText), session.user.sub, prompt.id)
+    const { output, price } = await textGenerator.generate(prompt.getFilledPrompt(userText), session.user.sub, prompt.id)
 
-    return Response.json({ generated: textGenerationOutput.output })
+    return Response.json({ generated: output })
 }
