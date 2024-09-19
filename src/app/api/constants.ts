@@ -19,7 +19,7 @@ export const DDB_USERS_TABLE_NAME = process.env.DDB_USERS_TABLE_NAME || ''
 export const DDB_CHECKOUT_SESSION_TABLE_NAME = process.env.DDB_CHECKOUT_SESSION_TABLE_NAME || ""
 export const S3_PROMPT_IMAGES_BUCKET_NAME = ""
 export const OPENAI_API_KEY = process.env.OPENAI_API_KEY || ""
-export const FREE_CREDITS_CENTS = 500
+export const FREE_CREDITS_CENTS = 50
 const stripeKey = process.env.STRIPE_SECRET_KEY || ""
 export const STRIPE = new Stripe(stripeKey)
 

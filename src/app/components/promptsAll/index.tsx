@@ -36,7 +36,7 @@ export const PopularPrompts = () => {
               img={images[idx % 4]}
               id={prompt.id}
               title={prompt.title}
-              key={prompt.title}
+              key={prompt.id}
               description={prompt.description}
               categories={prompt.categories}
             />
