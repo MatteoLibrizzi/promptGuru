@@ -2,6 +2,8 @@ import { STRIPE, STRIPE_ENDPOINT_SECRET } from "../../constants";
 import { CreditsPriceProvider } from "../../CreditsPriceProvider";
 import { DDBUsersRepository } from "../../repositories/users";
 
+// TODO need to make sure credits don't get added twice
+// both from free credit, and duplicate messages
 export async function POST(request: Request) {
     const text = await request.text();
     const headersList = request.headers

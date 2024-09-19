@@ -151,6 +151,7 @@ export class DDBUsersRepository extends UsersRepository {
                 transactionTimestamp: { N: transaction.transactionTimestamp.toString() },
                 description: { S: transaction.description },
                 balance: { N: newBalance.toString() },
+                promptId: { S: transaction.promptId || "N/A" },
             },
         };
 

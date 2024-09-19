@@ -10,7 +10,7 @@ const UserPage = ({ params }: { params: { id: string } }) => {
 
   const navigation = [
     { name: "Usage", href: "#", icon: HomeIcon },
-    { name: "Created Prompts", href: "#", icon: UsersIcon }, // TODO create api and repo method to get the prompts by user
+    // { name: "Created Prompts", href: "#", icon: UsersIcon }, // TODO create api and repo method to get the prompts by user
   ];
 
   return (
@@ -36,13 +36,18 @@ const UserPage = ({ params }: { params: { id: string } }) => {
                       }}
                       className={classNames(
                         selectedTab === item.name
-                          ? "bg-indigo-800 text-white"
-                          : "text-indigo-100 hover:bg-indigo-600",
-                        "group flex items-center px-2 py-2 text-base font-medium rounded-md"
+                          ? "bg-indigo-500 text-white hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-1"
+                          : "bg-white text-indigo-800 border-indigo-800 hover:bg-indigo-300",
+                        "ml-3 inline-flex justify-center items-center rounded-md border  py-2 px-4 text-sm font-medium  shadow-sm  "
                       )}
                     >
                       <item.icon
-                        className="mr-4 h-6 w-6 flex-shrink-0 text-indigo-300"
+                        className={classNames(
+                          selectedTab === item.name
+                            ? "text-white"
+                            : "text-indigo-800",
+                          " mr-4 h-6 w-6 flex-shrink-0"
+                        )}
                         aria-hidden="true"
                       />
                       {item.name}
